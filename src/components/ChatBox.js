@@ -9,7 +9,6 @@ const [question,setQuestion] = useState("");
 const [answer,setAnswer] = useState("");
 const [language,setLanguage] = useState("hi-IN");
 const [loading,setLoading] = useState(false);
-const [conversation,setConversation] = useState(false);
 
 const recognitionRef = useRef(null);
 
@@ -29,18 +28,11 @@ const response = await askAI(userQuestion);
 
 setAnswer(response);
 
-// Avatar speaking animation start
 setSpeaking(true);
 
-await speakText(response, language);
+await speakText(response);
 
-// Avatar speaking animation stop
 setSpeaking(false);
-
-// continuous conversation
-if(conversation){
-startListening();
-}
 
 }catch(error){
 
@@ -60,7 +52,7 @@ const SpeechRecognition =
 window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if(!SpeechRecognition){
-alert("Voice recognition not supported in this browser");
+alert("Voice recognition not supported");
 return;
 }
 
@@ -74,15 +66,9 @@ recognitionRef.current = recognition;
 
 recognition.start();
 
-recognition.onstart = () => {
-console.log("Listening started...");
-};
-
 recognition.onresult = (event)=>{
 
 const voiceText = event.results[0][0].transcript;
-
-console.log("You said:", voiceText);
 
 setQuestion(voiceText);
 
@@ -90,36 +76,9 @@ handleAsk(voiceText);
 
 };
 
-recognition.onerror = (event)=>{
-console.error("Speech error:", event.error);
+recognition.onerror = ()=>{
 recognition.stop();
 };
-
-recognition.onend = ()=>{
-console.log("Listening stopped");
-};
-
-};
-
-};
-
-
-const startConversation = () => {
-
-setConversation(true);
-
-startListening();
-
-};
-
-
-const stopConversation = () => {
-
-setConversation(false);
-
-if(recognitionRef.current){
-recognitionRef.current.stop();
-}
 
 };
 
@@ -134,8 +93,7 @@ borderRadius:"10px",
 maxWidth:"700px"
 }}>
 
-<h3>AI Voice Conversation</h3>
-
+<h3>Ask AI About Exowa</h3>
 
 <div style={{marginBottom:"10px"}}>
 
@@ -156,7 +114,6 @@ onChange={(e)=>setLanguage(e.target.value)}
 
 </div>
 
-
 <input
 type="text"
 value={question}
@@ -168,7 +125,6 @@ padding:"10px"
 }}
 />
 
-
 <button
 onClick={()=>handleAsk()}
 style={{
@@ -178,7 +134,6 @@ padding:"10px"
 >
 Ask
 </button>
-
 
 <button
 onClick={startListening}
@@ -191,41 +146,6 @@ color:"#fff"
 >
 🎤 Speak
 </button>
-
-
-{!conversation && (
-
-<button
-onClick={startConversation}
-style={{
-marginLeft:"10px",
-padding:"10px",
-background:"#F39C12",
-color:"#fff"
-}}
->
-Start Conversation
-</button>
-
-)}
-
-
-{conversation && (
-
-<button
-onClick={stopConversation}
-style={{
-marginLeft:"10px",
-padding:"10px",
-background:"#E74C3C",
-color:"#fff"
-}}
->
-Stop Conversation
-</button>
-
-)}
-
 
 {answer && (
 
