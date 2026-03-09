@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 function AvatarPresenter({ speaking }) {
 
-const [mouthOpen,setMouthOpen] = useState(false);
+const [mouth,setMouth] = useState(false);
 
 useEffect(()=>{
 
@@ -11,9 +11,7 @@ let interval;
 if(speaking){
 
 interval = setInterval(()=>{
-
-setMouthOpen(prev=>!prev);
-
+setMouth(prev => !prev);
 },200);
 
 }
@@ -22,17 +20,21 @@ return ()=>clearInterval(interval);
 
 },[speaking]);
 
-return (
+return(
 
-<div style={{textAlign:"center"}}>
+<div style={{
+textAlign:"center",
+marginBottom:"20px"
+}}>
 
 <img
 src="/avatar/ai-teacher.png"
 alt="AI Presenter"
 style={{
-width:"200px",
+width:"180px",
 borderRadius:"10px",
-transform: mouthOpen ? "scaleY(1.02)" : "scaleY(1)"
+transition:"transform 0.1s",
+transform: mouth ? "scaleY(1.03)" : "scaleY(1)"
 }}
 />
 
