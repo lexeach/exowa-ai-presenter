@@ -28,7 +28,7 @@ voice: "बस class चुनिए, subject चुनिए और तुर�
 title: "Benefits",
 image: "/slides/slide5.png",
 voice: "Exowa छात्रों की practice बढ़ाता है, accuracy improve करता है और exam confidence बढ़ाता है।"
-}
+},
 {
 title: "Benefits",
 image: "/slides/slide6.png",
