@@ -30,7 +30,14 @@ function App() {
 
       <SlideViewer slide={slides[currentSlide]} />
 
-      <VoicePlayer text={slides[currentSlide].content} />
+      <VoicePlayer 
+  text={slides[currentSlide].voice}
+  onFinish={()=>{
+    if(currentSlide < slides.length - 1){
+      setCurrentSlide(currentSlide + 1)
+    }
+  }}
+/>
 
       <div style={{marginTop:"20px"}}>
         <button onClick={prevSlide}>Previous</button>

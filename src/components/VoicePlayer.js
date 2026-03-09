@@ -1,10 +1,12 @@
 import { useEffect } from "react";
 import { speakText } from "../services/voiceService";
 
-function VoicePlayer({ text }) {
+function VoicePlayer({ text, onFinish }) {
 
   useEffect(() => {
-    speakText(text);
+    if(text){
+      speakText(text, onFinish);
+    }
   }, [text]);
 
   return null;

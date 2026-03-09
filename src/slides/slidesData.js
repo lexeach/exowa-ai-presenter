@@ -2,6 +2,26 @@ export const slides = [
 
 {
 title:"Welcome to Exowa",
+image:"/slides/slide1.png",
+voice:"Exowa ek AI powered mock test platform hai jo class 6 se 12 tak ke students ko unlimited practice provide karta hai."
+},
+
+{
+title:"Problem",
+image:"/slides/slide2.png",
+voice:"Aksar students ke paas practice questions ki kami hoti hai jisse exam confidence kam ho jata hai."
+},
+
+{
+title:"Solution",
+image:"/slides/slide3.png",
+voice:"Exowa AI automatically naye mock tests generate karta hai."
+}
+
+];export const slides = [
+
+{
+title:"Welcome to Exowa",
 content:"Exowa is an AI powered mock test generator for students from class 6 to 12."
 },
 

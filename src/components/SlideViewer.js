@@ -5,15 +5,19 @@ function SlideViewer({slide}){
 return(
 
 <div style={{
-border:"1px solid #ccc",
-padding:"20px",
-marginTop:"20px",
-minHeight:"150px"
+textAlign:"center",
+marginTop:"20px"
 }}>
 
-<h2>{slide.title}</h2>
-
-<p>{slide.content}</p>
+<img
+src={slide.image}
+alt={slide.title}
+style={{
+width:"90%",
+maxWidth:"900px",
+borderRadius:"10px"
+}}
+/>
 
 </div>
 
