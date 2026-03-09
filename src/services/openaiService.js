@@ -1,38 +1,21 @@
-const API_KEY = process.env.REACT_APP_OPENAI_API_KEY;
-
 export async function askAI(question){
 
-const response = await fetch(
-"https://api.openai.com/v1/chat/completions",
-{
+const response = await fetch("/.netlify/functions/askAI",{
+
 method:"POST",
 
 headers:{
-"Content-Type":"application/json",
-"Authorization":`Bearer ${API_KEY}`
+"Content-Type":"application/json"
 },
 
 body:JSON.stringify({
-
-model:"gpt-4o-mini",
-
-messages:[
-{
-role:"system",
-content:"You are an AI sales presenter explaining Exowa AI mock test platform for school students."
-},
-{
-role:"user",
-content:question
-}
-]
+question:question
+})
 
 })
 
-});
+const data = await response.json()
 
-const data = await response.json();
-
-return data.choices[0].message.content;
+return data.choices[0].message.content
 
 }
