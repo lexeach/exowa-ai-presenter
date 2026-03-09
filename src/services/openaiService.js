@@ -8,13 +8,17 @@ headers:{
 "Content-Type":"application/json"
 },
 
-body:JSON.stringify({
-question:question
+body: JSON.stringify({
+question: question
 })
 
 });
 
 const data = await response.json();
+
+if(data.error){
+throw new Error(data.error);
+}
 
 return data.choices[0].message.content;
 
