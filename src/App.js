@@ -55,7 +55,7 @@ function App() {
       </div>
 
       {/* AI Chat */}
-      <ChatBox />
+<ChatBox setSpeaking={setSpeaking} />
 
     </div>
   );

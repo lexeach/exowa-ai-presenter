@@ -3,7 +3,7 @@ import { askAI } from "../services/openaiService";
 import { speakText } from "../services/elevenLabsService";
 import { languageOptions } from "../services/voiceService";
 
-function ChatBox() {
+function ChatBox({ setSpeaking }) {
 
 const [question,setQuestion] = useState("");
 const [answer,setAnswer] = useState("");
@@ -29,14 +29,15 @@ const response = await askAI(userQuestion);
 
 setAnswer(response);
 
-// AI speaks
+// Avatar speaking animation start
 setSpeaking(true);
 
 await speakText(response, language);
 
+// Avatar speaking animation stop
 setSpeaking(false);
 
-// start listening again if conversation mode
+// continuous conversation
 if(conversation){
 startListening();
 }
@@ -123,8 +124,6 @@ maxWidth:"700px"
 <h3>AI Voice Conversation</h3>
 
 
-{/* Language */}
-
 <div style={{marginBottom:"10px"}}>
 
 <label style={{marginRight:"10px"}}>Language:</label>
@@ -144,8 +143,6 @@ onChange={(e)=>setLanguage(e.target.value)}
 
 </div>
 
-
-{/* Text question */}
 
 <input
 type="text"
@@ -170,8 +167,6 @@ Ask
 </button>
 
 
-{/* Voice Buttons */}
-
 <button
 onClick={startListening}
 style={{
@@ -184,8 +179,6 @@ color:"#fff"
 🎤 Speak
 </button>
 
-
-{/* Continuous Conversation */}
 
 {!conversation && (
 
@@ -220,8 +213,6 @@ Stop Conversation
 
 )}
 
-
-{/* AI Response */}
 
 {answer && (
 
