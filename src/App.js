@@ -35,25 +35,25 @@ function App() {
 
       {/* Voice narration */}
       <VoicePlayer
-key={currentSlide}
-text={slides[currentSlide].voice}
-onStart={() => setSpeaking(true)}
-onFinish={() => {
+        key={currentSlide}
+        text={slides[currentSlide].voice}
+        onStart={() => setSpeaking(true)}
+        onFinish={() => {
 
-setSpeaking(false);
+          setSpeaking(false);
 
-setCurrentSlide(prev => prev + 1) {
+          setCurrentSlide(prev => {
 
-if (prev < slides.length - 1) {
-return prev + 1;
-}
+            if (prev < slides.length - 1) {
+              return prev + 1;
+            }
 
-return prev;
+            return prev;
 
-});
+          });
 
-}}
-/>
+        }}
+      />
 
       {/* Slide Controls */}
       <div style={{ marginTop: "20px" }}>
@@ -64,7 +64,7 @@ return prev;
       </div>
 
       {/* AI Chat */}
-<ChatBox setSpeaking={setSpeaking} />
+      <ChatBox setSpeaking={setSpeaking} />
 
     </div>
   );
