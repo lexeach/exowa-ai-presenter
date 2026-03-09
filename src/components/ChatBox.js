@@ -1,220 +1,244 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { askAI } from "../services/openaiService";
 import { speakText } from "../services/elevenLabsService";
 import { languageOptions } from "../services/voiceService";
+
 function ChatBox() {
 
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
-  const [language, setLanguage] = useState("hi-IN");
-  const [loading, setLoading] = useState(false);
-  const [listening, setListening] = useState(false);
+const [question,setQuestion] = useState("");
+const [answer,setAnswer] = useState("");
+const [language,setLanguage] = useState("hi-IN");
+const [loading,setLoading] = useState(false);
+const [conversation,setConversation] = useState(false);
 
+const recognitionRef = useRef(null);
 
-  const handleAsk = async (q) => {
 
-    const userQuestion = q || question;
+const handleAsk = async (q) => {
 
-    if (!userQuestion.trim()) {
-      alert("Please enter a question");
-      return;
-    }
+const userQuestion = q || question;
 
-    setLoading(true);
-    setAnswer("Thinking...");
+if(!userQuestion.trim()) return;
 
-    try {
+setLoading(true);
+setAnswer("Thinking...");
 
-      const response = await askAI(userQuestion);
+try{
 
-      setAnswer(response);
+const response = await askAI(userQuestion);
 
-      speakText(response, language);
+setAnswer(response);
 
-    } catch (error) {
+// AI speaks
+await speakText(response, language);
 
-      console.error(error);
-      setAnswer("Error contacting AI");
+// start listening again if conversation mode
+if(conversation){
+startListening();
+}
 
-    }
+}catch(error){
 
-    setLoading(false);
-  };
+console.error(error);
+setAnswer("Error contacting AI");
 
+}
 
-  const handleVoice = () => {
+setLoading(false);
 
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+};
 
-    if (!SpeechRecognition) {
-      alert("Voice recognition not supported in this browser");
-      return;
-    }
 
-    const recognition = new SpeechRecognition();
+const startListening = () => {
 
-    recognition.lang = language;
-    recognition.continuous = false;
-    recognition.interimResults = false;
+const SpeechRecognition =
+window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    setListening(true);
+if(!SpeechRecognition){
+alert("Voice recognition not supported");
+return;
+}
 
-    recognition.start();
+const recognition = new SpeechRecognition();
 
+recognition.lang = language;
+recognition.continuous = false;
+recognition.interimResults = false;
 
-    recognition.onresult = (event) => {
+recognitionRef.current = recognition;
 
-      const voiceText = event.results[0][0].transcript;
+recognition.start();
 
-      setQuestion(voiceText);
+recognition.onresult = (event)=>{
 
-      handleAsk(voiceText);
+const voiceText = event.results[0][0].transcript;
 
-      recognition.stop();
+setQuestion(voiceText);
 
-      setListening(false);
+handleAsk(voiceText);
 
-    };
+};
 
+recognition.onerror = ()=>{
+recognition.stop();
+};
 
-    recognition.onerror = (event) => {
+};
 
-      console.error("Speech recognition error:", event.error);
 
-      recognition.stop();
+const startConversation = () => {
 
-      setListening(false);
+setConversation(true);
 
-    };
+startListening();
 
+};
 
-    recognition.onend = () => {
 
-      setListening(false);
+const stopConversation = () => {
 
-    };
+setConversation(false);
 
-  };
+if(recognitionRef.current){
+recognitionRef.current.stop();
+}
 
+};
 
-  return (
 
-    <div
-      style={{
-        marginTop: "40px",
-        padding: "20px",
-        border: "1px solid #ddd",
-        borderRadius: "10px",
-        maxWidth: "700px"
-      }}
-    >
+return (
 
-      <h3>Ask AI About Exowa</h3>
+<div style={{
+marginTop:"40px",
+padding:"20px",
+border:"1px solid #ddd",
+borderRadius:"10px",
+maxWidth:"700px"
+}}>
 
+<h3>AI Voice Conversation</h3>
 
-      {/* Language Selector */}
 
-      <div style={{ marginBottom: "10px" }}>
+{/* Language */}
 
-        <label style={{ marginRight: "10px" }}>
-          Select Language:
-        </label>
+<div style={{marginBottom:"10px"}}>
 
-        <select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          style={{ padding: "6px", borderRadius: "5px" }}
-        >
+<label style={{marginRight:"10px"}}>Language:</label>
 
-          {languageOptions.map((lang, index) => (
+<select
+value={language}
+onChange={(e)=>setLanguage(e.target.value)}
+>
 
-            <option key={index} value={lang.code}>
-              {lang.label}
-            </option>
+{languageOptions.map((lang,index)=>(
+<option key={index} value={lang.code}>
+{lang.label}
+</option>
+))}
 
-          ))}
+</select>
 
-        </select>
+</div>
 
-      </div>
 
+{/* Text question */}
 
-      {/* Question Input */}
+<input
+type="text"
+value={question}
+onChange={(e)=>setQuestion(e.target.value)}
+placeholder="Ask about Exowa..."
+style={{
+width:"60%",
+padding:"10px"
+}}
+/>
 
-      <input
-        type="text"
-        value={question}
-        onChange={(e) => setQuestion(e.target.value)}
-        placeholder="Ask a question about Exowa..."
-        style={{
-          width: "60%",
-          padding: "10px",
-          borderRadius: "5px",
-          border: "1px solid #ccc"
-        }}
-      />
 
+<button
+onClick={()=>handleAsk()}
+style={{
+marginLeft:"10px",
+padding:"10px"
+}}
+>
+Ask
+</button>
 
-      {/* Ask Button */}
 
-      <button
-        onClick={() => handleAsk()}
-        disabled={loading}
-        style={{
-          marginLeft: "10px",
-          padding: "10px 20px",
-          background: "#2F80ED",
-          color: "#fff",
-          border: "none",
-          borderRadius: "5px"
-        }}
-      >
-        {loading ? "..." : "Ask"}
-      </button>
+{/* Voice Buttons */}
 
+<button
+onClick={startListening}
+style={{
+marginLeft:"10px",
+padding:"10px",
+background:"#27AE60",
+color:"#fff"
+}}
+>
+🎤 Speak
+</button>
 
-      {/* Voice Button */}
 
-      <button
-        onClick={handleVoice}
-        style={{
-          marginLeft: "10px",
-          padding: "10px 20px",
-          background: "#27AE60",
-          color: "#fff",
-          border: "none",
-          borderRadius: "5px"
-        }}
-      >
-        {listening ? "Listening..." : "🎤 Speak"}
-      </button>
+{/* Continuous Conversation */}
 
+{!conversation && (
 
-      {/* AI Response */}
+<button
+onClick={startConversation}
+style={{
+marginLeft:"10px",
+padding:"10px",
+background:"#F39C12",
+color:"#fff"
+}}
+>
+Start Conversation
+</button>
 
-      {answer && (
+)}
 
-        <div
-          style={{
-            marginTop: "20px",
-            padding: "15px",
-            background: "#f5f7fb",
-            borderRadius: "8px"
-          }}
-        >
 
-          <strong>AI:</strong>
+{conversation && (
 
-          <p>{answer}</p>
+<button
+onClick={stopConversation}
+style={{
+marginLeft:"10px",
+padding:"10px",
+background:"#E74C3C",
+color:"#fff"
+}}
+>
+Stop Conversation
+</button>
 
-        </div>
+)}
 
-      )}
 
-    </div>
+{/* AI Response */}
 
-  );
+{answer && (
+
+<div style={{
+marginTop:"20px",
+background:"#f5f7fb",
+padding:"15px",
+borderRadius:"8px"
+}}>
+
+<strong>AI:</strong>
+
+<p>{answer}</p>
+
+</div>
+
+)}
+
+</div>
+
+);
 
 }
 
