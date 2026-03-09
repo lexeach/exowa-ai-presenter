@@ -1,4 +1,4 @@
-exports.handler = async function(event) {
+exports.handler = async function(event){
 
 const API_KEY = process.env.OPENAI_API_KEY
 
@@ -21,7 +21,7 @@ model:"gpt-4o-mini",
 messages:[
 {
 role:"system",
-content:"You are an AI assistant explaining Exowa AI mock test platform for school students."
+content:"You explain Exowa AI mock test platform to parents."
 },
 {
 role:"user",
