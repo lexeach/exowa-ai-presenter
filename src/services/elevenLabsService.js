@@ -1,15 +1,14 @@
 export async function speakText(text){
 
+try{
+
 const API_KEY = process.env.REACT_APP_ELEVEN_API_KEY;
 
 if(!API_KEY){
-console.error("ElevenLabs API key missing");
-return;
+throw new Error("Missing ElevenLabs API key");
 }
 
 const voiceId = "21m00Tcm4TlvDq8ikWAM";
-
-try{
 
 const response = await fetch(
 `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
@@ -21,24 +20,28 @@ headers:{
 },
 body:JSON.stringify({
 text:text,
-model_id:"eleven_multilingual_v2"
+model_id:"eleven_multilingual_v2",
+voice_settings:{
+stability:0.5,
+similarity_boost:0.75
+}
 })
 }
 );
 
 if(!response.ok){
 
-const err = await response.text();
-console.error("ElevenLabs error:",err);
-return;
+const errorText = await response.text();
+console.warn("ElevenLabs API error:", errorText);
+
+throw new Error("ElevenLabs request failed");
 
 }
 
 const blob = await response.blob();
 
 if(blob.size === 0){
-console.error("Empty audio received");
-return;
+throw new Error("Empty audio received");
 }
 
 const url = URL.createObjectURL(blob);
@@ -53,7 +56,22 @@ audio.onended = resolve;
 
 }catch(error){
 
-console.error("Voice error:",error);
+console.warn("Fallback to browser voice:", error);
+
+// Browser voice fallback
+return new Promise(resolve=>{
+
+const speech = new SpeechSynthesisUtterance(text);
+
+speech.lang = "hi-IN";
+speech.rate = 0.9;
+
+speech.onend = resolve;
+
+window.speechSynthesis.cancel();
+window.speechSynthesis.speak(speech);
+
+});
 
 }
 

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { speakText } from "../services/elevenLabsService";
+import { speakSlide } from "../services/browserVoiceService";
 
 function VoicePlayer({ text, onStart, onFinish }) {
 
@@ -11,7 +11,7 @@ if (!text) return;
 
 if (onStart) onStart();
 
-await speakText(text);
+await speakSlide(text);
 
 if (onFinish) onFinish();
 
