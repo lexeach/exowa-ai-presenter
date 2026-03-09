@@ -1,8 +1,8 @@
-export async function speakText(text, language){
+export async function speakText(text){
 
-const API_KEY = process.env.REACT_APP_ELEVEN_API_KEY
+const API_KEY = process.env.REACT_APP_ELEVEN_API_KEY;
 
-const voiceId = "21m00Tcm4TlvDq8ikWAM"
+const voiceId = "21m00Tcm4TlvDq8ikWAM";
 
 const response = await fetch(
 `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
@@ -17,18 +17,18 @@ text:text,
 model_id:"eleven_multilingual_v2"
 })
 }
-)
+);
 
-const blob = await response.blob()
+const blob = await response.blob();
 
-const url = URL.createObjectURL(blob)
+const url = URL.createObjectURL(blob);
 
-const audio = new Audio(url)
+const audio = new Audio(url);
 
-audio.play()
+audio.play();
 
 return new Promise(resolve=>{
-audio.onended = resolve
-})
+audio.onended = resolve;
+});
 
 }

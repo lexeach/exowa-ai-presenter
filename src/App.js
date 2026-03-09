@@ -35,11 +35,14 @@ function App() {
 
       {/* Voice narration */}
       <VoicePlayer
-        text={slides[currentSlide].voice}
-        onStart={() => setSpeaking(true)}
-        onFinish={() => {
-          setSpeaking(false);
+       key={currentSlide}
+       text={slides[currentSlide].voice}
+       onStart={()=>setSpeaking(true)}
+       onFinish={()=>{
 
+      setSpeaking(false);
+
+      
           if (currentSlide < slides.length - 1) {
             setCurrentSlide(currentSlide + 1);
           }

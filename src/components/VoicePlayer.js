@@ -3,25 +3,26 @@ import { speakText } from "../services/elevenLabsService";
 
 function VoicePlayer({ text, onStart, onFinish }) {
 
-  useEffect(() => {
+useEffect(() => {
 
-    const speak = async () => {
+const speak = async () => {
 
-      if (!text) return;
+if (!text) return;
 
-      if (onStart) onStart();
+if (onStart) onStart();
 
-      await speakText(text);
+await speakText(text);
 
-      if (onFinish) onFinish();
+if (onFinish) onFinish();
 
-    };
+};
 
-    speak();
+speak();
 
-  }, [text]);
+}, [text]);   // text change hone par speech run hoga
 
-  return null;
+return null;
+
 }
 
 export default VoicePlayer;
