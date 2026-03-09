@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { askAI } from "../services/openaiService";
-import {
-  speakText,
-  languageOptions
-} from "../services/voiceService";
-
+import { speakText } from "../services/elevenLabsService";
 function ChatBox() {
 
   const [question, setQuestion] = useState("");

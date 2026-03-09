@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { speakText } from "../services/voiceService";
+import { speakText } from "../services/elevenLabsService";
 
 function VoicePlayer({ text, onFinish }) {
 
