@@ -19,7 +19,7 @@ if (onFinish) onFinish();
 
 speak();
 
-}, [text]);   // text change hone par speech run hoga
+}, [text]);
 
 return null;
 
