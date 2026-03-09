@@ -9,6 +9,7 @@ const [question,setQuestion] = useState("");
 const [answer,setAnswer] = useState("");
 const [language,setLanguage] = useState("hi-IN");
 const [loading,setLoading] = useState(false);
+const [listening,setListening] = useState(false);
 
 const recognitionRef = useRef(null);
 
@@ -52,7 +53,7 @@ const SpeechRecognition =
 window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if(!SpeechRecognition){
-alert("Voice recognition not supported");
+alert("Speech recognition not supported in this browser");
 return;
 }
 
@@ -64,11 +65,17 @@ recognition.interimResults = false;
 
 recognitionRef.current = recognition;
 
+console.log("Mic started");
+
+setListening(true);
+
 recognition.start();
 
 recognition.onresult = (event)=>{
 
 const voiceText = event.results[0][0].transcript;
+
+console.log("You said:", voiceText);
 
 setQuestion(voiceText);
 
@@ -76,8 +83,22 @@ handleAsk(voiceText);
 
 };
 
-recognition.onerror = ()=>{
+recognition.onerror = (event)=>{
+
+console.error("Speech error:", event.error);
+
+setListening(false);
+
 recognition.stop();
+
+};
+
+recognition.onend = ()=>{
+
+console.log("Mic stopped");
+
+setListening(false);
+
 };
 
 };
@@ -94,6 +115,8 @@ maxWidth:"700px"
 }}>
 
 <h3>Ask AI About Exowa</h3>
+
+{/* Language */}
 
 <div style={{marginBottom:"10px"}}>
 
@@ -114,6 +137,9 @@ onChange={(e)=>setLanguage(e.target.value)}
 
 </div>
 
+
+{/* Input */}
+
 <input
 type="text"
 value={question}
@@ -125,6 +151,7 @@ padding:"10px"
 }}
 />
 
+
 <button
 onClick={()=>handleAsk()}
 style={{
@@ -135,17 +162,38 @@ padding:"10px"
 Ask
 </button>
 
+
+{/* Speak Button */}
+
 <button
 onClick={startListening}
 style={{
 marginLeft:"10px",
 padding:"10px",
-background:"#27AE60",
+background: listening ? "#E74C3C" : "#27AE60",
 color:"#fff"
 }}
 >
-🎤 Speak
+{listening ? "Listening..." : "🎤 Speak"}
 </button>
+
+
+{/* Listening indicator */}
+
+{listening && (
+
+<p style={{
+marginTop:"10px",
+color:"#E74C3C",
+fontWeight:"bold"
+}}>
+🎤 AI is listening...
+</p>
+
+)}
+
+
+{/* AI Response */}
 
 {answer && (
 
