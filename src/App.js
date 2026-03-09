@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import Avatar from "./components/Avatar";
 import SlideViewer from "./components/SlideViewer";
 import ChatBox from "./components/ChatBox";
 import VoicePlayer from "./components/VoicePlayer";
+import AvatarPresenter from "./components/AvatarPresenter";
 import { slides } from "./slides/slidesData";
 
 function App() {
 
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [speaking, setSpeaking] = useState(false);
 
   const nextSlide = () => {
     if (currentSlide < slides.length - 1) {
@@ -22,28 +23,38 @@ function App() {
   };
 
   return (
-    <div style={{fontFamily:"Arial", padding:"20px"}}>
+    <div style={{ fontFamily: "Arial", padding: "20px" }}>
 
       <h1>EXOWA AI Presenter</h1>
 
-      <Avatar />
+      {/* AI Avatar */}
+      <AvatarPresenter speaking={speaking} />
 
+      {/* Slide */}
       <SlideViewer slide={slides[currentSlide]} />
 
-      <VoicePlayer 
-  text={slides[currentSlide].voice}
-  onFinish={()=>{
-    if(currentSlide < slides.length - 1){
-      setCurrentSlide(currentSlide + 1)
-    }
-  }}
-/>
+      {/* Voice narration */}
+      <VoicePlayer
+        text={slides[currentSlide].voice}
+        onStart={() => setSpeaking(true)}
+        onFinish={() => {
+          setSpeaking(false);
 
-      <div style={{marginTop:"20px"}}>
+          if (currentSlide < slides.length - 1) {
+            setCurrentSlide(currentSlide + 1);
+          }
+        }}
+      />
+
+      {/* Slide Controls */}
+      <div style={{ marginTop: "20px" }}>
         <button onClick={prevSlide}>Previous</button>
-        <button onClick={nextSlide} style={{marginLeft:"10px"}}>Next</button>
+        <button onClick={nextSlide} style={{ marginLeft: "10px" }}>
+          Next
+        </button>
       </div>
 
+      {/* AI Chat */}
       <ChatBox />
 
     </div>

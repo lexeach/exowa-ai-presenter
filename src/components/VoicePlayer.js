@@ -1,12 +1,24 @@
 import { useEffect } from "react";
 import { speakText } from "../services/elevenLabsService";
 
-function VoicePlayer({ text, onFinish }) {
+function VoicePlayer({ text, onStart, onFinish }) {
 
   useEffect(() => {
-    if(text){
-      speakText(text, onFinish);
-    }
+
+    const speak = async () => {
+
+      if (!text) return;
+
+      if (onStart) onStart();
+
+      await speakText(text);
+
+      if (onFinish) onFinish();
+
+    };
+
+    speak();
+
   }, [text]);
 
   return null;

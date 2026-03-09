@@ -30,7 +30,11 @@ const response = await askAI(userQuestion);
 setAnswer(response);
 
 // AI speaks
+setSpeaking(true);
+
 await speakText(response, language);
+
+setSpeaking(false);
 
 // start listening again if conversation mode
 if(conversation){
