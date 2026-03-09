@@ -60,7 +60,7 @@ const SpeechRecognition =
 window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if(!SpeechRecognition){
-alert("Voice recognition not supported");
+alert("Voice recognition not supported in this browser");
 return;
 }
 
@@ -74,9 +74,15 @@ recognitionRef.current = recognition;
 
 recognition.start();
 
+recognition.onstart = () => {
+console.log("Listening started...");
+};
+
 recognition.onresult = (event)=>{
 
 const voiceText = event.results[0][0].transcript;
+
+console.log("You said:", voiceText);
 
 setQuestion(voiceText);
 
@@ -84,8 +90,15 @@ handleAsk(voiceText);
 
 };
 
-recognition.onerror = ()=>{
+recognition.onerror = (event)=>{
+console.error("Speech error:", event.error);
 recognition.stop();
+};
+
+recognition.onend = ()=>{
+console.log("Listening stopped");
+};
+
 };
 
 };
