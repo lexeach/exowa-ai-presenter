@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { askAI } from "../services/openaiService";
 import {
   speakText,
-  startVoiceRecognition,
   languageOptions
 } from "../services/voiceService";
 
@@ -33,7 +32,6 @@ function ChatBox() {
 
       setAnswer(response);
 
-      // AI speaks the answer
       speakText(response, language);
 
     } catch (error) {
@@ -49,17 +47,56 @@ function ChatBox() {
 
   const handleVoice = () => {
 
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Voice recognition not supported in this browser");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = language;
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
     setListening(true);
 
-    startVoiceRecognition(language, (text) => {
+    recognition.start();
 
-      setQuestion(text);
 
-      handleAsk(text);
+    recognition.onresult = (event) => {
+
+      const voiceText = event.results[0][0].transcript;
+
+      setQuestion(voiceText);
+
+      handleAsk(voiceText);
+
+      recognition.stop();
 
       setListening(false);
 
-    });
+    };
+
+
+    recognition.onerror = (event) => {
+
+      console.error("Speech recognition error:", event.error);
+
+      recognition.stop();
+
+      setListening(false);
+
+    };
+
+
+    recognition.onend = () => {
+
+      setListening(false);
+
+    };
 
   };
 
@@ -72,8 +109,7 @@ function ChatBox() {
         padding: "20px",
         border: "1px solid #ddd",
         borderRadius: "10px",
-        maxWidth: "700px",
-        background: "#ffffff"
+        maxWidth: "700px"
       }}
     >
 
@@ -82,7 +118,7 @@ function ChatBox() {
 
       {/* Language Selector */}
 
-      <div style={{ marginBottom: "15px" }}>
+      <div style={{ marginBottom: "10px" }}>
 
         <label style={{ marginRight: "10px" }}>
           Select Language:
@@ -91,10 +127,7 @@ function ChatBox() {
         <select
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
-          style={{
-            padding: "6px",
-            borderRadius: "5px"
-          }}
+          style={{ padding: "6px", borderRadius: "5px" }}
         >
 
           {languageOptions.map((lang, index) => (
@@ -137,8 +170,7 @@ function ChatBox() {
           background: "#2F80ED",
           color: "#fff",
           border: "none",
-          borderRadius: "5px",
-          cursor: "pointer"
+          borderRadius: "5px"
         }}
       >
         {loading ? "..." : "Ask"}
@@ -155,8 +187,7 @@ function ChatBox() {
           background: "#27AE60",
           color: "#fff",
           border: "none",
-          borderRadius: "5px",
-          cursor: "pointer"
+          borderRadius: "5px"
         }}
       >
         {listening ? "Listening..." : "🎤 Speak"}
@@ -178,9 +209,7 @@ function ChatBox() {
 
           <strong>AI:</strong>
 
-          <p style={{ marginTop: "5px" }}>
-            {answer}
-          </p>
+          <p>{answer}</p>
 
         </div>
 
