@@ -25,7 +25,8 @@ const url = URL.createObjectURL(blob);
 
 const audio = new Audio(url);
 
-audio.play(audio);
+// play audio
+await audio.play();
 
 return new Promise(resolve=>{
 audio.onended = resolve;
