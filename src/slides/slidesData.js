@@ -3,7 +3,7 @@ export const slides = [
 {
 title: "Welcome to Exowa",
 image: "/slides/slide1.png",
-voice: "नमस्ते 🙏
+voice: "नमस्ते,
 आप सभी का बहुत-बहुत स्वागत है।
 
 आज हम सिर्फ एक opportunity देखने नहीं आए हैं,
@@ -98,9 +98,9 @@ Exowa Women Partner Program — EWPP
 
 यह एक ऐसा platform है जहाँ
 
-✔ महिलाएँ घर से काम कर सकती हैं
-✔ education sector में काम कर सकती हैं
-✔ digital income opportunity पा सकती हैं
+महिलाएँ घर से काम कर सकती हैं
+education sector में काम कर सकती हैं
+digital income opportunity पा सकती हैं
 
 और सबसे अच्छी बात…
 
@@ -154,11 +154,11 @@ voice: "अब एक important बात।
 
 लेकिन यह opportunity unique क्यों है?
 
-✔ Work From Home
-✔ No Investment
-✔ Smartphone Based
-✔ Free Training
-✔ Support System
+Work From Home..,
+No Investment..,
+Smartphone Based..,
+Free Training..,
+Support System,
 
 (2 सेकंड pause)
 
