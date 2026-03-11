@@ -128,7 +128,7 @@ Exowa एक Education Technology Platform है।
 },
 {
 title: "Role of EWPP Partner",
-image: "/slides/slide6.png",
+image: "/slides/slide7.png",
 voice: `अब सवाल आता है…
 
 आपका काम क्या होगा?
@@ -147,7 +147,7 @@ voice: `अब सवाल आता है…
 },
 {
 title: "Why This Opportunity is Unique",
-image: "/slides/slide6.png",
+image: "/slides/slide8.png",
 voice: `अब एक important बात।
 
 आज internet पर बहुत opportunities हैं।
@@ -167,7 +167,7 @@ Support System,
 },
 {
 title: "Who Can Join",
-image: "/slides/slide6.png",
+image: "/slides/slide9.png",
 voice: `अब सवाल आता है…
 
 कौन join कर सकता है?
@@ -184,7 +184,7 @@ EWPP join कर सकती हैं
 },
 {
 title: "Skills Required",
-image: "/slides/slide6.png",
+image: "/slides/slide10.png",
 voice: `अब कई लोग सोचते हैं
 
 क्या इसके लिए special skill चाहिए?
@@ -201,7 +201,7 @@ voice: `अब कई लोग सोचते हैं
 },
 {
 title: "Training Support",
-image: "/slides/slide6.png",
+image: "/slides/slide11.png",
 voice: `आपको मिलेगा
 
  step by step training...,
@@ -215,7 +215,7 @@ voice: `आपको मिलेगा
 },
 {
 title: "Income Model",
-image: "/slides/slide6.png",
+image: "/slides/slide12.png",
 voice: `अब सबसे important सवाल।
 
 Income कैसे होगी?
@@ -231,7 +231,7 @@ Income कैसे होगी?
 },
 {
 title: "Income Potential",
-image: "/slides/slide6.png",
+image: "/slides/slide13.png",
 voice: `अब realistic earning क्या हो सकती है?
 
 Typical earning range
@@ -247,7 +247,7 @@ income और बढ़ सकती है।`
 },
 {
 title: "Growth Opportunity",
-image: "/slides/slide6.png",
+image: "/slides/slide14.png",
 voice: `EWPP में growth path है।
 
 Partner
@@ -277,7 +277,7 @@ Senior Executive Leader।
 },
 {
 title: "Real Impact",
-image: "/slides/slide6.png",
+image: "/slides/slide15.png",
 voice: `EWPP सिर्फ income नहीं है।
 
 यह है
@@ -291,7 +291,7 @@ voice: `EWPP सिर्फ income नहीं है।
 },
 {
 title: "Common Questions",
-image: "/slides/slide6.png",
+image: "/slides/slide16.png",
 voice: `अब कुछ common questions।
 
 क्या Experience जरूरी है?
@@ -310,7 +310,7 @@ Flexible।
 },
 {
 title: "Success Formula",
-image: "/slides/slide6.png",
+image: "/slides/slide17.png",
 voice: `अब सबसे important बात।
 
 Success कैसे मिलेगी?
@@ -325,7 +325,7 @@ Success कैसे मिलेगी?
 },
 {
 title: "Call To Action",
-image: "/slides/slide6.png",
+image: "/slides/slide18.png",
 voice: "अगर आप इस opportunity को explore करना चाहती हैं,
 
 तो
@@ -339,7 +339,7 @@ Chat में लिखें JOIN,
 },
 {
 title: "Final Motivation",
-image: "/slides/slide6.png",
+image: "/slides/slide19.png",
 voice: `एक बात याद रखिए।
 
 हर महिला में leadership potential होता है।
@@ -352,7 +352,7 @@ EWPP का mission है
 },
 {
 title: "Thank You",
-image: "/slides/slide6.png",
+image: "/slides/slide20.png",
 voice: `धन्यवाद,
 
 अगर आप इस opportunity को explore करना चाहती हैं
