@@ -35,6 +35,7 @@ export async function speakText(text) {
     const audioSrc = `data:audio/wav;base64,${audioBase64}`;
 
     const audio = new Audio(audioSrc);
+    audio.playbackRate = .85;
 
     await audio.play();
 
