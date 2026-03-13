@@ -1,25 +1,25 @@
 import { useEffect } from "react";
-import { speakSlide } from "../services/browserVoiceService";
+import { speakText } from "../services/sarvamVoiceService";
 
 function VoicePlayer({ text, onStart, onFinish }) {
 
-useEffect(() => {
+useEffect(()=>{
 
 const speak = async () => {
 
-if (!text) return;
+if(!text) return;
 
-if (onStart) onStart();
+if(onStart) onStart();
 
-await speakSlide(text);
+await speakText(text);
 
-if (onFinish) onFinish();
+if(onFinish) onFinish();
 
 };
 
 speak();
 
-}, [text]);
+},[text]);
 
 return null;
 

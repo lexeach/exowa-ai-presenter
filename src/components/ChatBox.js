@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { askAI } from "../services/openaiService";
-import { speakText } from "../services/elevenLabsService";
+//import { speakText } from "../services/elevenLabsService";
+import { speakText } from "../services/sarvamVoiceService";
 import { languageOptions } from "../services/voiceService";
 
 function ChatBox({ setSpeaking }) {
