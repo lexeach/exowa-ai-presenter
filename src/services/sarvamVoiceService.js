@@ -10,28 +10,31 @@ export async function speakText(text) {
     }
 
     const response = await fetch(
-      "https://api.sarvam.ai/v1/text-to-speech",
+      "https://api.sarvam.ai/speech/tts",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "api-subscription-key": API_KEY
+          "Authorization": `Bearer ${API_KEY}`
         },
         body: JSON.stringify({
-          input: text,
-          voice: "meera",
-          language: "hi-IN"
+          text: text,
+          target_language_code: "hi-IN",
+          speaker: "meera",
+          format: "wav"
         })
       }
     );
 
     if (!response.ok) {
+
       const err = await response.text();
       console.error("Sarvam API error:", err);
       return;
+
     }
 
-    // API returns audio file directly
+    // API returns audio file
     const blob = await response.blob();
 
     const audioUrl = URL.createObjectURL(blob);
