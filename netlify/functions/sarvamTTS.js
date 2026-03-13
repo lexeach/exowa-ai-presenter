@@ -1,6 +1,6 @@
-import { SarvamAIClient } from "sarvamai";
+const { SarvamAIClient } = require("sarvamai");
 
-export async function handler(event) {
+exports.handler = async function(event) {
 
 try {
 
@@ -22,27 +22,18 @@ text: text,
 target_language_code: "hi-IN"
 });
 
-if(!response.audio){
-
-return {
-statusCode:500,
-body:JSON.stringify({error:"No audio returned"})
-};
-
-}
-
 return {
 statusCode:200,
-body:JSON.stringify(response)
+body: JSON.stringify(response)
 };
 
 } catch(error){
 
 return {
 statusCode:500,
-body:JSON.stringify({error:error.message})
+body: JSON.stringify({error:error.message})
 };
 
 }
 
-}
+};
