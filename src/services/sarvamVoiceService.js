@@ -1,7 +1,5 @@
 export async function speakText(text){
 
-try{
-
 const response = await fetch("/.netlify/functions/sarvamTTS",{
 method:"POST",
 headers:{
@@ -26,11 +24,5 @@ await audio.play();
 return new Promise(resolve=>{
 audio.onended = resolve;
 });
-
-}catch(error){
-
-console.error("Voice error:",error);
-
-}
 
 }
