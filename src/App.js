@@ -7,67 +7,113 @@ import { slides } from "./slides/slidesData";
 
 function App() {
 
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [speaking, setSpeaking] = useState(false);
+const [currentSlide, setCurrentSlide] = useState(0);
+const [speaking, setSpeaking] = useState(false);
 
-  const nextSlide = () => {
-    if (currentSlide < slides.length - 1) {
-      setCurrentSlide(currentSlide + 1);
-    }
-  };
 
-  const prevSlide = () => {
-    if (currentSlide > 0) {
-      setCurrentSlide(currentSlide - 1);
-    }
-  };
+const nextSlide = () => {
 
-  return (
-    <div style={{ fontFamily: "Arial", padding: "20px" }}>
+setCurrentSlide(prev => {
 
-      <h1>EXOWA AI Presenter</h1>
+if (prev < slides.length - 1) {
+return prev + 1;
+}
 
-      {/* AI Avatar */}
-      <AvatarPresenter speaking={speaking} />
+return prev;
 
-      {/* Slide */}
-      <SlideViewer slide={slides[currentSlide]} />
+});
 
-      {/* Voice narration */}
-      <VoicePlayer
-        key={currentSlide}
-        text={slides[currentSlide].voice}
-        onStart={() => setSpeaking(true)}
-        onFinish={() => {
+};
 
-          setSpeaking(false);
 
-          setCurrentSlide(prev => {
+const prevSlide = () => {
 
-            if (prev < slides.length - 1) {
-              return prev + 1;
-            }
+setCurrentSlide(prev => {
 
-            return prev;
+if (prev > 0) {
+return prev - 1;
+}
 
-          });
+return prev;
 
-        }}
-      />
+});
 
-      {/* Slide Controls */}
-      <div style={{ marginTop: "20px" }}>
-        <button onClick={prevSlide}>Previous</button>
-        <button onClick={nextSlide} style={{ marginLeft: "10px" }}>
-          Next
-        </button>
-      </div>
+};
 
-      {/* AI Chat */}
-      <ChatBox setSpeaking={setSpeaking} />
 
-    </div>
-  );
+return (
+
+<div style={{
+fontFamily:"Arial",
+padding:"20px",
+maxWidth:"900px",
+margin:"auto"
+}}>
+
+<h1 style={{textAlign:"center"}}>
+EXOWA AI Presenter
+</h1>
+
+
+{/* AI Avatar */}
+<AvatarPresenter speaking={speaking} />
+
+
+{/* Slide */}
+<SlideViewer slide={slides[currentSlide]} />
+
+
+{/* Voice narration */}
+<VoicePlayer
+key={currentSlide}
+text={slides[currentSlide]?.voice}
+onStart={() => setSpeaking(true)}
+onFinish={() => {
+
+setSpeaking(false);
+
+setCurrentSlide(prev => {
+
+if (prev < slides.length - 1) {
+return prev + 1;
+}
+
+return prev;
+
+});
+
+}}
+/>
+
+
+{/* Slide Controls */}
+
+<div style={{
+marginTop:"20px",
+display:"flex",
+justifyContent:"center",
+gap:"10px"
+}}>
+
+<button onClick={prevSlide}>
+Previous
+</button>
+
+<button onClick={nextSlide}>
+Next
+</button>
+
+</div>
+
+
+{/* AI Chat */}
+
+<ChatBox setSpeaking={setSpeaking} />
+
+</div>
+
+);
+
 }
 
 export default App;

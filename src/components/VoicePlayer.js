@@ -1,9 +1,17 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { speakText } from "../services/sarvamVoiceService";
 
 function VoicePlayer({ text, onStart, onFinish }) {
 
+const firstRun = useRef(true);
+
 useEffect(()=>{
+
+// prevent auto run on first load
+if(firstRun.current){
+firstRun.current = false;
+return;
+}
 
 const speak = async () => {
 
