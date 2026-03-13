@@ -108,20 +108,15 @@ digital income opportunity पा सकती हैं
 {
 title: "What is Exowa",
 image: "/slides/slide6.png",
-voice: `अब एक important सवाल आता है।
-
-Exowa है क्या?
+voice: `अब एक important सवाल आता है की Exowa है क्या?
 
 Exowa एक Education Technology Platform है।
-
 जो students और parents को help करता है
+practice based learning में...
+performance improvement में...
+और parent support में...
 
- practice based learning में...
- performance improvement में...
- parent support में...
-
-
-यानी यह सिर्फ business नहीं है
+यानी यह सिर्फ business नहीं है,
 यह education impact platform है।`
 },
 {
