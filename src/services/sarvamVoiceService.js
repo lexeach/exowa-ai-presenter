@@ -13,10 +13,8 @@ body:JSON.stringify({text})
 const data = await response.json();
 
 if(!data.audio){
-
 console.error("No audio returned",data);
 return;
-
 }
 
 const audioSrc = `data:audio/wav;base64,${data.audio}`;

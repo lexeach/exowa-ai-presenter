@@ -2,63 +2,70 @@ export async function handler(event) {
 
 try {
 
-const { text } = JSON.parse(event.body);
+if(event.httpMethod !== "POST"){
+return {
+statusCode:405,
+body:"POST required"
+};
+}
+
+const body = JSON.parse(event.body || "{}");
+
+const text = body.text;
+
+if(!text){
+return {
+statusCode:400,
+body:JSON.stringify({error:"Text missing"})
+};
+}
 
 const API_KEY = process.env.SARVAM_API_KEY;
+
+if(!API_KEY){
+return {
+statusCode:500,
+body:JSON.stringify({error:"Sarvam API key missing"})
+};
+}
 
 const response = await fetch(
 "https://api.sarvam.ai/v1/speech/generate",
 {
-method: "POST",
-headers: {
-"Content-Type": "application/json",
-"Authorization": `Bearer ${API_KEY}`
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"Authorization":`Bearer ${API_KEY}`
 },
-body: JSON.stringify({
-text: text,
-speaker: "meera",
-target_language_code: "hi-IN"
+body:JSON.stringify({
+text:text,
+target_language_code:"hi-IN",
+speaker:"meera"
 })
 }
 );
 
-if (!response.ok) {
-
-const err = await response.text();
-
-console.error("Sarvam API error:", err);
-
-return {
-statusCode: 500,
-body: err
-};
-
-}
-
 const data = await response.json();
 
-if (!data.audio) {
+if(!data.audio){
 
 return {
-statusCode: 500,
-body: JSON.stringify({ error: "No audio returned" })
+statusCode:500,
+body:JSON.stringify(data)
 };
 
 }
 
 return {
-statusCode: 200,
-headers: {
-"Content-Type": "application/json"
-},
-body: JSON.stringify(data)
+statusCode:200,
+body:JSON.stringify(data)
 };
 
-} catch (error) {
+}catch(error){
 
 return {
-statusCode: 500,
-body: JSON.stringify({ error: error.message })
+statusCode:500,
+body:JSON.stringify({error:error.message})
 };
 
 }
