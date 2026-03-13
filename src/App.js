@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { unlockAudio } from "./services/sarvamVoiceService";
 import SlideViewer from "./components/SlideViewer";
 import ChatBox from "./components/ChatBox";
 import VoicePlayer from "./components/VoicePlayer";
@@ -97,10 +98,13 @@ gap:"10px"
 
 <button onClick={prevSlide}>
 Previous
-</button>
-
-<button onClick={nextSlide}>
-Next
+<button
+onClick={()=>{
+unlockAudio();
+setStarted(true);
+}}
+>
+Start Presentation
 </button>
 
 </div>

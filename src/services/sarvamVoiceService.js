@@ -1,41 +1,47 @@
-export async function speakText(text){
+let audioUnlocked = false;
 
-try{
+export function unlockAudio() {
+  if (audioUnlocked) return;
 
-const response = await fetch("/.netlify/functions/sarvamTTS",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({text})
-});
-
-const data = await response.json();
-
-if(!data.audios || data.audios.length === 0){
-
-console.error("No audio returned",data);
-return;
-
+  try {
+    const audio = new Audio();
+    audio.src =
+      "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=";
+    audio.play().catch(() => {});
+    audioUnlocked = true;
+  } catch (e) {
+    console.warn("Audio unlock failed", e);
+  }
 }
 
-// Sarvam returns base64 audio in audios array
-const audioBase64 = data.audios[0];
+export async function speakText(text) {
+  try {
+    const response = await fetch("/.netlify/functions/sarvamTTS", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text }),
+    });
 
-const audioSrc = `data:audio/wav;base64,${audioBase64}`;
+    const data = await response.json();
 
-const audio = new Audio(audioSrc);
+    if (!data.audios || data.audios.length === 0) {
+      console.error("No audio returned", data);
+      return;
+    }
 
-await audio.play();
+    const audioBase64 = data.audios[0];
+    const audioSrc = `data:audio/wav;base64,${audioBase64}`;
 
-return new Promise(resolve=>{
-audio.onended = resolve;
-});
+    const audio = new Audio(audioSrc);
 
-}catch(error){
+    await audio.play();
 
-console.error("Voice error:",error);
-
-}
-
+    return new Promise((resolve) => {
+      audio.onended = resolve;
+    });
+  } catch (error) {
+    console.error("Voice error:", error);
+  }
 }
