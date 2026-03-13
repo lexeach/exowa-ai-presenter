@@ -10,35 +10,33 @@ return;
 }
 
 const response = await fetch(
-"https://api.sarvam.ai/v1/text-to-speech",
+"https://api.sarvam.ai/v1/tts",
 {
 method:"POST",
 headers:{
 "Content-Type":"application/json",
-"Authorization": `Bearer ${API_KEY}`
+"Authorization":`Bearer ${API_KEY}`
 },
-body: JSON.stringify({
-text: text,
-voice: "meera",
-language: "hi-IN",
-format: "wav"
+body:JSON.stringify({
+text:text,
+speaker:"meera",
+language:"hi-IN"
 })
 }
 );
 
-if(!response.ok){
+const data = await response.json();
 
-const errorText = await response.text();
-console.error("Sarvam API error:", errorText);
+if(!data.audio){
+
+console.error("Sarvam response error",data);
 return;
 
 }
 
-const blob = await response.blob();
+const audioSrc = `data:audio/wav;base64,${data.audio}`;
 
-const url = URL.createObjectURL(blob);
-
-const audio = new Audio(url);
+const audio = new Audio(audioSrc);
 
 await audio.play();
 
@@ -48,7 +46,7 @@ audio.onended = resolve;
 
 }catch(error){
 
-console.error("Sarvam voice error:", error);
+console.error("Sarvam voice error:",error);
 
 }
 
