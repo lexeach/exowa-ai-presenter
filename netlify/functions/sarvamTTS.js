@@ -1,54 +1,66 @@
 export async function handler(event) {
 
-  try {
+try {
 
-    const { text } = JSON.parse(event.body);
+const { text } = JSON.parse(event.body);
 
-    const API_KEY = process.env.SARVAM_API_KEY;
+const API_KEY = process.env.SARVAM_API_KEY;
 
-    const response = await fetch(
-      "https://api.sarvam.ai/v1/audio/speech",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${API_KEY}`
-        },
-        body: JSON.stringify({
-          model: "sarvam-tts",
-          voice: "meera",
-          input: text,
-          language: "hi-IN"
-        })
-      }
-    );
+const response = await fetch(
+"https://api.sarvam.ai/v1/speech/generate",
+{
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"Authorization": `Bearer ${API_KEY}`
+},
+body: JSON.stringify({
+text: text,
+speaker: "meera",
+target_language_code: "hi-IN"
+})
+}
+);
 
-    if (!response.ok) {
-      const err = await response.text();
-      return {
-        statusCode: 500,
-        body: err
-      };
-    }
+if (!response.ok) {
 
-    const audioBuffer = await response.arrayBuffer();
+const err = await response.text();
 
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "audio/mpeg"
-      },
-      body: Buffer.from(audioBuffer).toString("base64"),
-      isBase64Encoded: true
-    };
+console.error("Sarvam API error:", err);
 
-  } catch (error) {
+return {
+statusCode: 500,
+body: err
+};
 
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message })
-    };
+}
 
-  }
+const data = await response.json();
+
+if (!data.audio) {
+
+return {
+statusCode: 500,
+body: JSON.stringify({ error: "No audio returned" })
+};
+
+}
+
+return {
+statusCode: 200,
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify(data)
+};
+
+} catch (error) {
+
+return {
+statusCode: 500,
+body: JSON.stringify({ error: error.message })
+};
+
+}
 
 }

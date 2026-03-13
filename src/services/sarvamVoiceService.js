@@ -1,37 +1,38 @@
-export async function speakText(text) {
+export async function speakText(text){
 
-  try {
+try{
 
-    const response = await fetch("/.netlify/functions/sarvamTTS", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ text })
-    });
+const response = await fetch("/.netlify/functions/sarvamTTS",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({text})
+});
 
-    if (!response.ok) {
-      const err = await response.text();
-      console.error("TTS error:", err);
-      return;
-    }
+const data = await response.json();
 
-    const blob = await response.blob();
+if(!data.audio){
 
-    const audioUrl = URL.createObjectURL(blob);
+console.error("No audio returned",data);
+return;
 
-    const audio = new Audio(audioUrl);
+}
 
-    await audio.play();
+const audioSrc = `data:audio/wav;base64,${data.audio}`;
 
-    return new Promise(resolve => {
-      audio.onended = resolve;
-    });
+const audio = new Audio(audioSrc);
 
-  } catch (error) {
+await audio.play();
 
-    console.error("Voice error:", error);
+return new Promise(resolve=>{
+audio.onended = resolve;
+});
 
-  }
+}catch(error){
+
+console.error("Voice error:",error);
+
+}
 
 }
