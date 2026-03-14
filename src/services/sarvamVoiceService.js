@@ -1,6 +1,5 @@
 let audioUnlocked = false;
 
-/* Unlock browser audio */
 export function unlockAudio() {
   if (audioUnlocked) return;
 
@@ -15,56 +14,14 @@ export function unlockAudio() {
   }
 }
 
-/* Detect narration speed based on text length */
-function getSpeechRate(text) {
-  const words = text.split(/\s+/).length;
-
-  if (words < 20) return 0.9;
-  if (words < 50) return 1;
-  if (words < 90) return 1.05;
-  return 1.12;
-}
-
-/* Add smart pauses for keynote style narration */
-function addNaturalPauses(text) {
-
-  let processed = text;
-
-  /* pause after sentences */
-  processed = processed.replace(/।/g, "। ... ");
-  processed = processed.replace(/\./g, ". ... ");
-
-  /* emphasis words */
-  const keywords = [
-    "Exowa",
-    "AI",
-    "practice",
-    "exam",
-    "confidence",
-    "students",
-    "parents"
-  ];
-
-  keywords.forEach(word => {
-    const regex = new RegExp(word, "gi");
-    processed = processed.replace(regex, `${word} ...`);
-  });
-
-  return processed;
-}
-
 export async function speakText(text) {
-
   try {
-
-    const narrationText = addNaturalPauses(text);
-
     const response = await fetch("/.netlify/functions/sarvamTTS", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ text: narrationText })
+      body: JSON.stringify({ text }),
     });
 
     const data = await response.json();
@@ -78,16 +35,13 @@ export async function speakText(text) {
     const audioSrc = `data:audio/wav;base64,${audioBase64}`;
 
     const audio = new Audio(audioSrc);
-
-    const rate = getSpeechRate(text);
-    audio.playbackRate = rate;
+    audio.playbackRate = .85;
 
     await audio.play();
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       audio.onended = resolve;
     });
-
   } catch (error) {
     console.error("Voice error:", error);
   }
