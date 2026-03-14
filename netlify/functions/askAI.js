@@ -1,64 +1,82 @@
+const { exowaKnowledge } = require("../../src/data/exowaKnowledgeBase");
+
 exports.handler = async function (event) {
 
 try {
 
-const API_KEY = process.env.OPENAI_API_KEY;
+const body = JSON.parse(event.body || "{}");
 
-if (!event.body) {
+const userQuestion = body.question || body.prompt || "";
+
+if(!userQuestion){
 return {
-statusCode: 400,
-body: JSON.stringify({ error: "No request body received" })
+statusCode:400,
+body:JSON.stringify({ error:"Question missing"})
 };
 }
 
-const body = JSON.parse(event.body);
-const question = body.question;
+const systemPrompt = `
+You are an AI presenter explaining Exowa to parents.
 
-if (!question) {
-return {
-statusCode: 400,
-body: JSON.stringify({ error: "Question missing" })
-};
-}
+Knowledge base:
+${JSON.stringify(exowaKnowledge)}
 
-const response = await fetch(
-"https://api.openai.com/v1/chat/completions",
-{
-method: "POST",
-headers: {
-"Content-Type": "application/json",
-"Authorization": `Bearer ${API_KEY}`
+Rules:
+- Answer only about Exowa
+- Use simple language
+- Maximum 3 sentences
+- Focus on student benefits
+`;
+
+const response = await fetch("https://api.openai.com/v1/chat/completions",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json",
+"Authorization":`Bearer ${process.env.OPENAI_API_KEY}`
 },
-body: JSON.stringify({
-model: "gpt-4o-mini",
-messages: [
-{
-role: "system",
-content: "You explain the Exowa AI mock test platform to parents."
-},
-{
-role: "user",
-content: question
-}
+
+body:JSON.stringify({
+
+model:"gpt-4o-mini",
+
+messages:[
+{ role:"system", content: systemPrompt },
+{ role:"user", content: userQuestion }
 ]
+
 })
-}
-);
+
+});
 
 const data = await response.json();
 
+const answer =
+data.choices?.[0]?.message?.content || "Sorry, I could not answer that.";
+
 return {
-statusCode: 200,
-body: JSON.stringify(data)
+
+statusCode:200,
+
+body:JSON.stringify({
+answer
+})
+
 };
 
-} catch (error) {
+}catch(error){
+
+console.error("AI error:",error);
 
 return {
-statusCode: 500,
-body: JSON.stringify({
-error: error.message
+
+statusCode:500,
+
+body:JSON.stringify({
+error:"AI processing error"
 })
+
 };
 
 }
