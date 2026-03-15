@@ -1,3 +1,4 @@
+const fetch = require("node-fetch");
 const { exowaKnowledge } = require("../../src/data/exowaKnowledgeBase");
 
 exports.handler = async function (event) {
@@ -28,27 +29,23 @@ Rules:
 - Focus on student benefits
 `;
 
-const response = await fetch("https://api.openai.com/v1/chat/completions",{
-
+const response = await fetch(
+"https://api.openai.com/v1/chat/completions",
+{
 method:"POST",
-
 headers:{
 "Content-Type":"application/json",
 "Authorization":`Bearer ${process.env.OPENAI_API_KEY}`
 },
-
 body:JSON.stringify({
-
 model:"gpt-4o-mini",
-
 messages:[
 {role:"system",content:systemPrompt},
 {role:"user",content:question}
 ]
-
 })
-
-});
+}
+);
 
 const data = await response.json();
 
@@ -59,11 +56,8 @@ data?.choices?.[0]?.message?.content ||
 "Sorry, I could not answer that.";
 
 return {
-
 statusCode:200,
-
 body:JSON.stringify({answer})
-
 };
 
 }catch(error){
@@ -71,13 +65,8 @@ body:JSON.stringify({answer})
 console.error("AI error:",error);
 
 return {
-
 statusCode:500,
-
-body:JSON.stringify({
-error:"AI processing error"
-})
-
+body:JSON.stringify({error:error.message})
 };
 
 }
