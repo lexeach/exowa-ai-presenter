@@ -6,12 +6,12 @@ try {
 
 const body = JSON.parse(event.body || "{}");
 
-const userQuestion = body.question || body.prompt || "";
+const question = body.question || body.prompt || "";
 
-if(!userQuestion){
+if(!question){
 return {
 statusCode:400,
-body:JSON.stringify({ error:"Question missing"})
+body:JSON.stringify({error:"Question missing"})
 };
 }
 
@@ -42,8 +42,8 @@ body:JSON.stringify({
 model:"gpt-4o-mini",
 
 messages:[
-{ role:"system", content: systemPrompt },
-{ role:"user", content: userQuestion }
+{role:"system",content:systemPrompt},
+{role:"user",content:question}
 ]
 
 })
@@ -52,16 +52,17 @@ messages:[
 
 const data = await response.json();
 
+console.log("OpenAI response:",data);
+
 const answer =
-data.choices?.[0]?.message?.content || "Sorry, I could not answer that.";
+data?.choices?.[0]?.message?.content ||
+"Sorry, I could not answer that.";
 
 return {
 
 statusCode:200,
 
-body:JSON.stringify({
-answer
-})
+body:JSON.stringify({answer})
 
 };
 
