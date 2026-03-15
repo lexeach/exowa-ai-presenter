@@ -1,4 +1,27 @@
-export const exowaKnowledge = {
+const exowaKnowledge = {
+
+product:{
+name:"Exowa",
+description:
+"Exowa ek AI based mock test generator hai jo class 6 se 12 tak ke students ko unlimited practice provide karta hai."
+},
+
+features:[
+"AI generated mock tests",
+"Unlimited practice",
+"Subject wise tests",
+"Instant feedback"
+],
+
+benefits:[
+"Students ki exam preparation strong hoti hai",
+"Confidence improve hota hai",
+"Parents ko progress samajhne me help milti hai"
+]
+
+};
+
+module.exports = { exowaKnowledge };
 
 product:{
 name:"Exowa",
