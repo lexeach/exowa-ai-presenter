@@ -10,6 +10,10 @@ const [listening,setListening] = useState(false);
 const recognitionRef = useRef(null);
 const historyRef = useRef([]);
 const conversationRef = useRef(false);
+const aiSpeakingRef = useRef(false);
+
+
+/* start mic */
 
 const startRecognition = () => {
 
@@ -47,6 +51,8 @@ try{
 
 recognition.abort();
 
+/* AI reply */
+
 const answer = await askAI(question,historyRef.current);
 
 console.log("AI:",answer);
@@ -56,11 +62,17 @@ role:"assistant",
 content:answer
 });
 
+/* lock mic restart */
+
+aiSpeakingRef.current = true;
+
 setSpeaking(true);
 
 await speakText(answer);
 
 setSpeaking(false);
+
+aiSpeakingRef.current = false;
 
 }catch(err){
 
@@ -68,22 +80,24 @@ console.error("AI error:",err);
 
 }
 
+/* restart mic */
+
 if(conversationRef.current){
 
 setTimeout(()=>{
 startRecognition();
-},1500);
+},800);
 
 }
 
 };
 
 
-/* mic auto restart if timeout */
+/* mic auto restart (only if AI not speaking) */
 
 recognition.onend = ()=>{
 
-if(conversationRef.current){
+if(conversationRef.current && !aiSpeakingRef.current){
 
 console.log("Mic timeout restart");
 
@@ -98,8 +112,8 @@ startRecognition();
 
 recognition.onerror = (event)=>{
 
-if(event.error === "no-speech") return;
-if(event.error === "aborted") return;
+if(event.error==="no-speech") return;
+if(event.error==="aborted") return;
 
 console.log("Speech error:",event);
 
@@ -108,9 +122,12 @@ console.log("Speech error:",event);
 };
 
 
+/* start conversation */
+
 const startConversation = ()=>{
 
-conversationRef.current = true;
+conversationRef.current=true;
+
 setConversation(true);
 
 startRecognition();
@@ -118,15 +135,16 @@ startRecognition();
 };
 
 
+/* stop conversation */
+
 const stopConversation = ()=>{
 
-conversationRef.current = false;
+conversationRef.current=false;
+
 setConversation(false);
 
 if(recognitionRef.current){
-
 recognitionRef.current.stop();
-
 }
 
 setListening(false);
