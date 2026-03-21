@@ -28,8 +28,7 @@ return;
 const recognition = new SpeechRecognition();
 
 recognition.lang = "hi-IN";
-recognition.continuous = false;
-recognition.interimResults = false;
+recognition.maxAlternatives = 1;
 
 recognitionRef.current = recognition;
 
@@ -72,6 +71,13 @@ recognitionRef.current.stop();
 } catch (err) {}
 
 /* speak */
+
+// stop listening completely before speaking
+try {
+recognitionRef.current.abort();
+} catch(e) {}
+
+setListening(false);
 
 setSpeaking(true);
 
@@ -124,11 +130,11 @@ if (conversationRef.current) {
 setTimeout(() => {
 
 try {
-recognition.start();
+recognitionRef.current.start();
 setListening(true);
-} catch (err) {}
+} catch(e) {}
 
-}, 800);
+}, 1800);
 
 }
 
