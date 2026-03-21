@@ -1,24 +1,19 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { askAI } from "../services/openaiService";
 import { speakText } from "../services/sarvamVoiceService";
 
 function ChatBox({ setSpeaking }) {
 
-const [conversation, setConversation] = useState(false);
-const [listening, setListening] = useState(false);
+const [conversation,setConversation] = useState(false);
+const [listening,setListening] = useState(false);
 
 const recognitionRef = useRef(null);
 const historyRef = useRef([]);
 
-useEffect(() => {
+const createRecognition = () => {
 
 const SpeechRecognition =
 window.SpeechRecognition || window.webkitSpeechRecognition;
-
-if (!SpeechRecognition) {
-alert("Speech recognition not supported");
-return;
-}
 
 const recognition = new SpeechRecognition();
 
@@ -29,38 +24,33 @@ recognition.maxAlternatives = 1;
 
 recognitionRef.current = recognition;
 
-
 /* USER SPEAKS */
 
-recognition.onresult = async (event) => {
+recognition.onresult = async (event)=>{
 
 const question = event.results[0][0].transcript;
 
-console.log("Parent:", question);
+console.log("Parent:",question);
 
 setListening(false);
 
 historyRef.current.push({
-role: "user",
-content: question
+role:"user",
+content:question
 });
 
-try {
+try{
 
-/* stop mic */
+const answer = await askAI(question,historyRef.current);
 
-recognition.stop();
-
-const answer = await askAI(question, historyRef.current);
-
-console.log("AI:", answer);
+console.log("AI:",answer);
 
 historyRef.current.push({
-role: "assistant",
-content: answer
+role:"assistant",
+content:answer
 });
 
-/* speak answer */
+/* speak AI answer */
 
 setSpeaking(true);
 
@@ -68,61 +58,62 @@ await speakText(answer);
 
 setSpeaking(false);
 
-} catch (error) {
+}catch(err){
 
-console.error("AI error:", error);
+console.error("AI error:",err);
 
 }
 
-/* restart mic after speaking */
+/* restart mic */
 
-if (conversation) {
+if(conversation){
 
-setTimeout(() => {
-
+setTimeout(()=>{
 startListening();
-
-}, 500);
+},600);
 
 }
 
 };
 
+recognition.onerror = (event)=>{
 
-/* handle speech errors */
+if(event.error === "no-speech") return;
+if(event.error === "aborted") return;
 
-recognition.onerror = (event) => {
-
-if (event.error === "no-speech") return;
-if (event.error === "aborted") return;
-
-console.log("Speech error:", event);
+console.log("Speech error:",event);
 
 };
 
-}, [conversation, setSpeaking]);
+};
 
 
 /* start listening */
 
-const startListening = () => {
+const startListening = ()=>{
 
-try {
+try{
+
+createRecognition();
 
 recognitionRef.current.start();
 
 setListening(true);
 
-console.log("Mic restarted");
+console.log("Mic started");
 
-} catch (e) {}
+}catch(e){
+
+console.log("Mic start error",e);
+
+}
 
 };
 
 
 /* start conversation */
 
-const startConversation = () => {
+const startConversation = ()=>{
 
 setConversation(true);
 
@@ -133,28 +124,28 @@ startListening();
 
 /* stop conversation */
 
-const stopConversation = () => {
+const stopConversation = ()=>{
 
 setConversation(false);
 
-try {
+try{
 recognitionRef.current.stop();
-} catch (e) {}
+}catch(e){}
 
 setListening(false);
 
 };
 
 
-return (
+return(
 
 <div
 style={{
-marginTop: "40px",
-padding: "20px",
-border: "1px solid #ddd",
-borderRadius: "10px",
-maxWidth: "700px"
+marginTop:"40px",
+padding:"20px",
+border:"1px solid #ddd",
+borderRadius:"10px",
+maxWidth:"700px"
 }}
 >
 
@@ -165,11 +156,11 @@ maxWidth: "700px"
 <button
 onClick={startConversation}
 style={{
-padding: "12px",
-background: "#27AE60",
-color: "#fff",
-border: "none",
-borderRadius: "6px"
+padding:"12px",
+background:"#27AE60",
+color:"#fff",
+border:"none",
+borderRadius:"6px"
 }}
 >
 🎤 Start Conversation
@@ -182,11 +173,11 @@ borderRadius: "6px"
 <button
 onClick={stopConversation}
 style={{
-padding: "12px",
-background: "#E74C3C",
-color: "#fff",
-border: "none",
-borderRadius: "6px"
+padding:"12px",
+background:"#E74C3C",
+color:"#fff",
+border:"none",
+borderRadius:"6px"
 }}
 >
 Stop Conversation
@@ -196,7 +187,7 @@ Stop Conversation
 
 {listening && (
 
-<p style={{ marginTop: "10px", color: "#E74C3C" }}>
+<p style={{marginTop:"10px",color:"#E74C3C"}}>
 🎤 बोलिए... मैं सुन रहा हूँ
 </p>
 
