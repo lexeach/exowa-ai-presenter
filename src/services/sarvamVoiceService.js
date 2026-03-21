@@ -1,3 +1,27 @@
+let audioUnlocked = false;
+
+export function unlockAudio() {
+
+if(audioUnlocked) return;
+
+try{
+
+const audio = new Audio();
+
+audio.src =
+"data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=";
+
+audio.play().catch(()=>{});
+
+audioUnlocked = true;
+
+}catch(e){
+console.warn("Audio unlock failed",e);
+}
+
+}
+
+
 export async function speakText(text){
 
 const response = await fetch("/.netlify/functions/sarvamTTS",{
