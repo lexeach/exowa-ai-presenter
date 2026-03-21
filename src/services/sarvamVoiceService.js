@@ -1,6 +1,7 @@
 let audioUnlocked = false;
+let currentAudio = null;
 
-/* Unlock browser audio (required for Chrome autoplay policy) */
+/* Unlock browser audio */
 
 export function unlockAudio() {
 
@@ -9,8 +10,6 @@ if (audioUnlocked) return;
 try {
 
 const audio = new Audio();
-
-/* tiny silent audio */
 
 audio.src =
 "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=";
@@ -30,7 +29,7 @@ console.warn("Audio unlock failed", e);
 }
 
 
-/* Speak AI text using Sarvam TTS */
+/* Speak AI text */
 
 export async function speakText(text) {
 
@@ -38,15 +37,15 @@ try {
 
 console.log("TTS request:", text);
 
-const response = await fetch("/.netlify/functions/sarvamTTS", {
+const response = await fetch("/.netlify/functions/sarvamTTS",{
 
-method: "POST",
+method:"POST",
 
-headers: {
-"Content-Type": "application/json"
+headers:{
+"Content-Type":"application/json"
 },
 
-body: JSON.stringify({ text })
+body: JSON.stringify({text})
 
 });
 
@@ -54,9 +53,9 @@ const data = await response.json();
 
 console.log("TTS response:", data);
 
-if (!data.audios || data.audios.length === 0) {
+if(!data.audios || data.audios.length === 0){
 
-console.error("No audio returned from TTS");
+console.error("No audio returned");
 
 return;
 
@@ -66,51 +65,58 @@ const audioBase64 = data.audios[0];
 
 const audioSrc = `data:audio/wav;base64,${audioBase64}`;
 
-const audio = new Audio();
+
+/* stop previous audio */
+
+if(currentAudio){
+currentAudio.pause();
+currentAudio = null;
+}
+
+
+/* create DOM audio */
+
+const audio = document.createElement("audio");
 
 audio.src = audioSrc;
 
-/* slow slightly for natural speech */
+audio.preload = "auto";
 
 audio.playbackRate = 0.9;
 
+document.body.appendChild(audio);
 
-/* wait until audio fully loads */
+currentAudio = audio;
 
-await new Promise((resolve) => {
 
+/* wait until audio ready */
+
+await new Promise(resolve=>{
 audio.onloadeddata = resolve;
-
 });
 
 
-/* small buffer delay */
-
-await new Promise((resolve)=>setTimeout(resolve,120));
-
-
-/* play audio */
+/* play */
 
 await audio.play();
 
 
-/* wait until audio finishes */
+/* wait until finish */
 
-return new Promise((resolve) => {
-
-audio.onended = () => {
-
-/* extra delay so last word isn't cut */
-
-setTimeout(resolve,300);
-
-};
-
+await new Promise(resolve=>{
+audio.onended = resolve;
 });
 
-} catch (error) {
 
-console.error("Voice error:", error);
+/* cleanup */
+
+audio.remove();
+
+currentAudio = null;
+
+}catch(error){
+
+console.error("Voice error:",error);
 
 }
 
