@@ -34,14 +34,26 @@ return;
 }
 
 const audioBase64 = data.audios[0];
-
 const audioSrc = `data:audio/wav;base64,${audioBase64}`;
 
-const audio = new Audio(audioSrc);
+const audio = new Audio();
 
+audio.src = audioSrc;
 audio.playbackRate = 0.9;
 
-/* ensure audio loads */
+/* wait until audio is fully loaded */
+
+await new Promise((resolve) => {
+
+audio.onloadeddata = () => {
+resolve();
+};
+
+});
+
+/* small delay to prevent first-word cut */
+
+await new Promise((resolve) => setTimeout(resolve, 120));
 
 await audio.play();
 
