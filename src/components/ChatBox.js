@@ -9,9 +9,11 @@ const [conversation, setConversation] = useState(false);
 
 const recognitionRef = useRef(null);
 
-/* IMPORTANT: refs for stable loop */
-const conversationRef = useRef(false);
+/* conversation memory */
 const historyRef = useRef([]);
+
+/* stable conversation flag */
+const conversationRef = useRef(false);
 
 useEffect(() => {
 
@@ -19,7 +21,7 @@ const SpeechRecognition =
 window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if (!SpeechRecognition) {
-alert("Speech recognition not supported");
+alert("Speech recognition not supported in this browser");
 return;
 }
 
@@ -31,7 +33,7 @@ recognition.interimResults = false;
 
 recognitionRef.current = recognition;
 
-/* when parent speaks */
+/* USER SPEAKS */
 
 recognition.onresult = async (event) => {
 
@@ -41,7 +43,7 @@ console.log("Parent:", question);
 
 setListening(false);
 
-/* update history */
+/* store user question */
 
 historyRef.current.push({
 role: "user",
@@ -50,31 +52,30 @@ content: question
 
 try {
 
+/* ask AI */
+
 const answer = await askAI(question, historyRef.current);
 
 console.log("AI:", answer);
 
-/* save AI response */
+/* store AI answer */
 
 historyRef.current.push({
 role: "assistant",
 content: answer
 });
 
+/* stop recognition before speaking */
+
+try {
+recognitionRef.current.stop();
+} catch (err) {}
+
 /* speak */
 
 setSpeaking(true);
 
-// stop listening before speaking
-try {
-recognitionRef.current.stop();
-} catch (e) {}
-
-setSpeaking(true);
-
 await speakText(answer);
-
-setSpeaking(false);
 
 setSpeaking(false);
 
@@ -91,9 +92,13 @@ if (conversationRef.current) {
 setTimeout(() => {
 
 try {
+
 recognitionRef.current.start();
 setListening(true);
-} catch (err) {}
+
+} catch (err) {
+console.log("Restart error:", err);
+}
 
 }, 1000);
 
@@ -101,20 +106,20 @@ setListening(true);
 
 };
 
-/* speech error */
+/* ERROR HANDLING */
 
-recognition.onerror = (e) => {
+recognition.onerror = (event) => {
 
-console.log("Speech error:", e);
-setListening(false);
+if (event.error === "aborted") {
+console.log("Speech aborted (normal)");
+return;
+}
 
-};
+if (event.error === "no-speech") {
 
-/* when recognition stops */
+console.log("No speech detected");
 
-recognition.onend = () => {
-
-if (conversationRef.current && !listening) {
+if (conversationRef.current) {
 
 setTimeout(() => {
 
@@ -123,7 +128,34 @@ recognition.start();
 setListening(true);
 } catch (err) {}
 
-}, 700);
+}, 800);
+
+}
+
+return;
+
+}
+
+console.log("Speech error:", event);
+
+};
+
+/* when recognition ends */
+
+recognition.onend = () => {
+
+if (conversationRef.current && !listening) {
+
+setTimeout(() => {
+
+try {
+
+recognition.start();
+setListening(true);
+
+} catch (err) {}
+
+}, 800);
 
 }
 
@@ -136,6 +168,7 @@ setListening(true);
 const startConversation = () => {
 
 conversationRef.current = true;
+
 setConversation(true);
 
 if (recognitionRef.current) {
@@ -156,11 +189,14 @@ setListening(true);
 const stopConversation = () => {
 
 conversationRef.current = false;
+
 setConversation(false);
 
 if (recognitionRef.current) {
 
+try {
 recognitionRef.current.stop();
+} catch (err) {}
 
 }
 
