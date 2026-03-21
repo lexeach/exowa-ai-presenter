@@ -13,72 +13,152 @@ body:"POST required"
 
 const { question } = JSON.parse(event.body || "{}");
 
+if(!question){
+return {
+statusCode:400,
+body: JSON.stringify({error:"Question required"})
+};
+}
+
 const q = question.toLowerCase();
 
 let reply = "";
 
-/* class coverage */
 
-if(q.includes("class") || q.includes("कक्षा")){
+/* PRODUCT INTRO */
+
+if(
+q.includes("exowa") ||
+q.includes("क्या है") ||
+q.includes("kya hai")
+){
+
+reply =
+"Exowa एक AI based mock test platform है जो class 6 से 12 तक के students को unlimited practice provide करता है। इससे students अपनी exam preparation बेहतर कर सकते हैं। क्या आप इसके features या subjects के बारे में जानना चाहेंगे?";
+
+}
+
+
+/* CLASS COVERAGE */
+
+else if(
+q.includes("class") ||
+q.includes("कक्षा") ||
+q.includes("कौन सी क्लास")
+){
 
 reply = exowaKnowledge.commonQuestions.classCoverage;
 
 }
 
-/* practice */
 
-else if(q.includes("practice") || q.includes("प्रैक्टिस")){
+/* SUBJECTS */
+
+else if(
+q.includes("subject") ||
+q.includes("subjects") ||
+q.includes("विषय")
+){
+
+reply =
+"Exowa में ये subjects available हैं: " +
+exowaKnowledge.subjects.join(", ") +
+". इन सभी subjects के लिए AI generated mock tests मिलते हैं।";
+
+}
+
+
+/* FEATURES */
+
+else if(
+q.includes("feature") ||
+q.includes("सुविधा") ||
+q.includes("क्या-क्या")
+){
+
+reply =
+"Exowa के main features हैं: " +
+exowaKnowledge.features.join(", ") +
+". इससे students को exam preparation में काफी मदद मिलती है।";
+
+}
+
+
+/* PRACTICE */
+
+else if(
+q.includes("practice") ||
+q.includes("प्रैक्टिस")
+){
 
 reply = exowaKnowledge.commonQuestions.practice;
 
 }
 
-/* exam */
 
-else if(q.includes("exam") || q.includes("तैयारी")){
+/* EXAM PREPARATION */
+
+else if(
+q.includes("exam") ||
+q.includes("तैयारी") ||
+q.includes("preparation")
+){
 
 reply = exowaKnowledge.commonQuestions.examPreparation;
 
 }
 
-/* parents */
 
-else if(q.includes("parent") || q.includes("माता") || q.includes("अभिभावक")){
+/* PARENTS BENEFIT */
+
+else if(
+q.includes("parent") ||
+q.includes("parents") ||
+q.includes("माता") ||
+q.includes("अभिभावक")
+){
 
 reply = exowaKnowledge.commonQuestions.parentsBenefit;
 
 }
 
-/* subjects */
 
-else if(q.includes("subject") || q.includes("विषय")){
+/* PRICING */
 
-reply = "Exowa में ये subjects available हैं: " + exowaKnowledge.subjects.join(", ");
+else if(
+q.includes("price") ||
+q.includes("fees") ||
+q.includes("फीस") ||
+q.includes("price")
+){
 
-}
-
-/* features */
-
-else if(q.includes("feature") || q.includes("सुविधा")){
-
-reply = "Exowa के main features हैं: " + exowaKnowledge.features.join(", ");
-
-}
-
-/* pricing */
-
-else if(q.includes("price") || q.includes("fees") || q.includes("price")){
-
-reply = exowaKnowledge.pricing.note;
+reply =
+"Exowa subscription based platform है। Monthly और yearly plans available हैं ताकि parents अपने budget के अनुसार plan चुन सकें।";
 
 }
 
-/* default */
+
+/* POSITIVE RESPONSE */
+
+else if(
+q.includes("जानना") ||
+q.includes("बताइए") ||
+q.includes("yes") ||
+q.includes("haan")
+){
+
+reply =
+"ज़रूर। Exowa में students unlimited mock tests दे सकते हैं और हर test के बाद instant feedback मिलता है जिससे उन्हें अपनी weak areas समझने में मदद मिलती है।";
+
+}
+
+
+/* DEFAULT */
 
 else{
 
 reply =
-"Exowa एक AI based mock test platform है जो class 6 से 12 तक के students को unlimited practice provide करता है। क्या आप इसके features या subjects के बारे में जानना चाहेंगे?";
+"Exowa एक AI based mock test platform है जो class 6 से 12 तक के students को unlimited practice provide करता है। क्या आप इसके features, subjects या pricing के बारे में जानना चाहेंगे?";
 
 }
 
