@@ -1,215 +1,145 @@
 import React, { useState, useRef } from "react";
 import { askAI } from "../services/openaiService";
-//import { speakText } from "../services/elevenLabsService";
 import { speakText } from "../services/sarvamVoiceService";
-import { languageOptions } from "../services/voiceService";
 
 function ChatBox({ setSpeaking }) {
 
-const [question,setQuestion] = useState("");
-const [answer,setAnswer] = useState("");
-const [language,setLanguage] = useState("hi-IN");
-const [loading,setLoading] = useState(false);
 const [listening,setListening] = useState(false);
+const [conversation,setConversation] = useState(false);
 
 const recognitionRef = useRef(null);
 
-
-const handleAsk = async (q) => {
-
-const userQuestion = q || question;
-
-if(!userQuestion.trim()) return;
-
-setLoading(true);
-setAnswer("Thinking...");
-
-try{
-
-const response = await askAI(userQuestion);
-
-setAnswer(response);
-
-setSpeaking(true);
-
-await speakText(response);
-
-setSpeaking(false);
-
-}catch(error){
-
-console.error(error);
-setAnswer("Error contacting AI");
-
-}
-
-setLoading(false);
-
-};
-
-
-const startListening = () => {
+const startRecognition = () => {
 
 const SpeechRecognition =
 window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if(!SpeechRecognition){
-alert("Speech recognition not supported in this browser");
+alert("Speech recognition not supported");
 return;
 }
 
 const recognition = new SpeechRecognition();
 
-recognition.lang = language;
+recognition.lang = "hi-IN";
 recognition.continuous = false;
 recognition.interimResults = false;
 
 recognitionRef.current = recognition;
 
-console.log("Mic started");
-
+recognition.start();
 setListening(true);
 
-recognition.start();
+recognition.onresult = async (event)=>{
 
-recognition.onresult = (event)=>{
+const question = event.results[0][0].transcript;
 
-const voiceText = event.results[0][0].transcript;
-
-console.log("You said:", voiceText);
-
-setQuestion(voiceText);
-
-handleAsk(voiceText);
-
-};
-
-recognition.onerror = (event)=>{
-
-console.error("Speech error:", event.error);
+console.log("Parent:",question);
 
 setListening(false);
 
-recognition.stop();
+const answer = await askAI(question);
+
+console.log("AI:",answer);
+
+setSpeaking(true);
+
+await speakText(answer);
+
+setSpeaking(false);
+
+/* start listening again if conversation mode */
+if(conversation){
+startRecognition();
+}
 
 };
 
-recognition.onend = ()=>{
+recognition.onerror = ()=>{
+setListening(false);
+};
 
-console.log("Mic stopped");
+};
+
+
+/* Start conversation */
+
+const startConversation = () => {
+
+setConversation(true);
+startRecognition();
+
+};
+
+
+/* Stop conversation */
+
+const stopConversation = () => {
+
+setConversation(false);
+
+if(recognitionRef.current){
+recognitionRef.current.stop();
+}
 
 setListening(false);
-
-};
 
 };
 
 
 return (
 
-<div style={{
+<div
+style={{
 marginTop:"40px",
 padding:"20px",
 border:"1px solid #ddd",
 borderRadius:"10px",
 maxWidth:"700px"
-}}>
-
-<h3>Ask AI About Exowa</h3>
-
-{/* Language */}
-
-<div style={{marginBottom:"10px"}}>
-
-<label style={{marginRight:"10px"}}>Language:</label>
-
-<select
-value={language}
-onChange={(e)=>setLanguage(e.target.value)}
+}}
 >
 
-{languageOptions.map((lang,index)=>(
-<option key={index} value={lang.code}>
-{lang.label}
-</option>
-))}
+<h3>Parent Voice Interaction</h3>
 
-</select>
-
-</div>
-
-
-{/* Input */}
-
-<input
-type="text"
-value={question}
-onChange={(e)=>setQuestion(e.target.value)}
-placeholder="Ask about Exowa..."
-style={{
-width:"60%",
-padding:"10px"
-}}
-/>
-
+{!conversation && (
 
 <button
-onClick={()=>handleAsk()}
+onClick={startConversation}
 style={{
-marginLeft:"10px",
-padding:"10px"
+padding:"12px",
+background:"#27AE60",
+color:"#fff",
+border:"none",
+borderRadius:"6px"
 }}
 >
-Ask
+🎤 Start Conversation
 </button>
-
-
-{/* Speak Button */}
-
-<button
-onClick={startListening}
-style={{
-marginLeft:"10px",
-padding:"10px",
-background: listening ? "#E74C3C" : "#27AE60",
-color:"#fff"
-}}
->
-{listening ? "Listening..." : "🎤 Speak"}
-</button>
-
-
-{/* Listening indicator */}
-
-{listening && (
-
-<p style={{
-marginTop:"10px",
-color:"#E74C3C",
-fontWeight:"bold"
-}}>
-🎤 AI is listening...
-</p>
 
 )}
 
+{conversation && (
 
-{/* AI Response */}
+<button
+onClick={stopConversation}
+style={{
+padding:"12px",
+background:"#E74C3C",
+color:"#fff",
+border:"none",
+borderRadius:"6px"
+}}
+>
+Stop Conversation
+</button>
 
-{answer && (
+)}
 
-<div style={{
-marginTop:"20px",
-background:"#f5f7fb",
-padding:"15px",
-borderRadius:"8px"
-}}>
+{listening && (
 
-<strong>AI:</strong>
-
-<p>{answer}</p>
-
-</div>
+<p style={{marginTop:"10px",color:"#E74C3C"}}>
+🎤 Listening...
+</p>
 
 )}
 
