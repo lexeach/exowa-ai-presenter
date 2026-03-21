@@ -51,9 +51,18 @@ content: question
 
 try {
 
-/* stop mic before AI speaks */
+/* COMPLETELY STOP MIC BEFORE AI SPEAKS */
 
-recognition.abort();
+if(recognitionRef.current){
+try{
+recognitionRef.current.onresult = null;
+recognitionRef.current.onerror = null;
+recognitionRef.current.onend = null;
+recognitionRef.current.stop();
+}catch(e){}
+}
+
+/* GET AI ANSWER */
 
 const answer = await askAI(question, historyRef.current);
 
@@ -64,11 +73,20 @@ role: "assistant",
 content: answer
 });
 
-/* lock mic restart */
+
+/* AI SPEAKING LOCK */
 
 aiSpeakingRef.current = true;
 
 setSpeaking(true);
+
+
+/* SMALL SPEECH DELAY (PREVENT WORD CUT) */
+
+await new Promise(resolve => setTimeout(resolve,200));
+
+
+/* PLAY VOICE */
 
 await speakText(answer);
 
@@ -82,7 +100,8 @@ console.error("AI error:", error);
 
 }
 
-/* restart mic after AI voice */
+
+/* RESTART MIC AFTER AI VOICE */
 
 if (conversationRef.current) {
 
@@ -90,7 +109,7 @@ setTimeout(() => {
 
 startRecognition();
 
-}, 1200);
+}, 1500);
 
 }
 
