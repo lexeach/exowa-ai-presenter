@@ -16,7 +16,7 @@ const SpeechRecognition =
 window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if (!SpeechRecognition) {
-alert("Speech recognition not supported in this browser");
+alert("Speech recognition not supported");
 return;
 }
 
@@ -47,11 +47,9 @@ content: question
 
 try {
 
-/* stop mic before AI speaks */
+/* stop mic */
 
-try {
 recognition.stop();
-} catch (e) {}
 
 const answer = await askAI(question, historyRef.current);
 
@@ -62,7 +60,7 @@ role: "assistant",
 content: answer
 });
 
-/* speak AI answer */
+/* speak answer */
 
 setSpeaking(true);
 
@@ -76,75 +74,38 @@ console.error("AI error:", error);
 
 }
 
-/* restart mic */
+/* restart mic after speaking */
 
 if (conversation) {
 
 setTimeout(() => {
 
-try {
-recognition.start();
-setListening(true);
-} catch (e) {}
+startListening();
 
-}, 700);
+}, 500);
 
 }
 
 };
 
 
-/* handle errors */
+/* handle speech errors */
 
 recognition.onerror = (event) => {
 
-if (event.error === "no-speech") {
-return;
-}
-
-if (event.error === "aborted") {
-return;
-}
-
-if (event.error === "not-allowed") {
-
-alert("Microphone permission denied. Please allow microphone access.");
-
-return;
-}
+if (event.error === "no-speech") return;
+if (event.error === "aborted") return;
 
 console.log("Speech error:", event);
 
 };
 
-
-/* recognition ended */
-
-recognition.onend = () => {
-
-if (conversation && !listening) {
-
-setTimeout(() => {
-
-try {
-recognition.start();
-setListening(true);
-} catch (e) {}
-
-}, 700);
-
-}
-
-};
-
-}, [conversation, listening, setSpeaking]);
+}, [conversation, setSpeaking]);
 
 
-/* START CONVERSATION */
+/* start listening */
 
-const startConversation = () => {
-
-setConversation(true);
+const startListening = () => {
 
 try {
 
@@ -152,12 +113,25 @@ recognitionRef.current.start();
 
 setListening(true);
 
+console.log("Mic restarted");
+
 } catch (e) {}
 
 };
 
 
-/* STOP CONVERSATION */
+/* start conversation */
+
+const startConversation = () => {
+
+setConversation(true);
+
+startListening();
+
+};
+
+
+/* stop conversation */
 
 const stopConversation = () => {
 
