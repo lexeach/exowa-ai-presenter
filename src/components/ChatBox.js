@@ -4,12 +4,12 @@ import { speakText } from "../services/sarvamVoiceService";
 
 function ChatBox({ setSpeaking }) {
 
-const [listening,setListening] = useState(false);
 const [conversation,setConversation] = useState(false);
+const [listening,setListening] = useState(false);
 
 const recognitionRef = useRef(null);
-const historyRef = useRef([]);
 const speakingRef = useRef(false);
+const historyRef = useRef([]);
 
 useEffect(()=>{
 
@@ -30,8 +30,7 @@ recognition.maxAlternatives = 1;
 
 recognitionRef.current = recognition;
 
-
-/* USER SPEAKS */
+/* speech detected */
 
 recognition.onresult = async (event)=>{
 
@@ -41,12 +40,12 @@ const question = event.results[event.results.length-1][0].transcript;
 
 console.log("Parent:",question);
 
-try{
-
 historyRef.current.push({
 role:"user",
 content:question
 });
+
+try{
 
 const answer = await askAI(question,historyRef.current);
 
@@ -56,8 +55,6 @@ historyRef.current.push({
 role:"assistant",
 content:answer
 });
-
-/* pause listening while speaking */
 
 speakingRef.current = true;
 
@@ -71,31 +68,24 @@ speakingRef.current = false;
 
 }catch(err){
 
-console.error("AI error:",err);
+console.error(err);
 
 }
 
 };
 
-
-/* error handling */
+/* ignore normal errors */
 
 recognition.onerror = (event)=>{
 
-if(event.error === "no-speech"){
-return;
-}
-
-if(event.error === "aborted"){
-return;
-}
+if(event.error === "no-speech") return;
+if(event.error === "aborted") return;
 
 console.log("Speech error:",event);
 
 };
 
-
-/* auto restart */
+/* restart recognition if needed */
 
 recognition.onend = ()=>{
 
@@ -112,24 +102,20 @@ recognition.start();
 },[conversation,setSpeaking]);
 
 
-/* START CONVERSATION */
+/* start */
 
 const startConversation = ()=>{
 
 setConversation(true);
 
 try{
-
 recognitionRef.current.start();
-
 setListening(true);
-
 }catch(e){}
 
 };
 
-
-/* STOP CONVERSATION */
+/* stop */
 
 const stopConversation = ()=>{
 
@@ -143,18 +129,15 @@ setListening(false);
 
 };
 
-
 return(
 
-<div
-style={{
+<div style={{
 marginTop:"40px",
 padding:"20px",
 border:"1px solid #ddd",
 borderRadius:"10px",
 maxWidth:"700px"
-}}
->
+}}>
 
 <h3>Parent Voice Interaction</h3>
 
