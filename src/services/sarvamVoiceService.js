@@ -1,15 +1,15 @@
-let audioContext = null;
-let audioUnlocked = false;
+let currentAudio = null;
 
 export function unlockAudio() {
 
-if (audioUnlocked) return;
-
 try {
 
-audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const audio = new Audio();
 
-audioUnlocked = true;
+audio.src =
+"data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=";
+
+audio.play().catch(()=>{});
 
 console.log("Audio unlocked");
 
@@ -21,22 +21,19 @@ console.warn("Audio unlock failed", e);
 
 }
 
+
 export async function speakText(text) {
 
 try {
 
-if (!audioContext) {
-audioContext = new (window.AudioContext || window.webkitAudioContext)();
-}
-
 console.log("TTS request:", text);
 
-const response = await fetch("/.netlify/functions/sarvamTTS",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
+const response = await fetch("/.netlify/functions/sarvamTTS", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
 },
-body: JSON.stringify({text})
+body: JSON.stringify({ text })
 });
 
 const data = await response.json();
@@ -50,24 +47,48 @@ return;
 
 const audioBase64 = data.audios[0];
 
-const binary = atob(audioBase64);
-const bytes = new Uint8Array(binary.length);
+const audioSrc = `data:audio/wav;base64,${audioBase64}`;
 
-for (let i = 0; i < binary.length; i++) {
-bytes[i] = binary.charCodeAt(i);
+
+/* stop previous audio */
+
+if (currentAudio) {
+
+currentAudio.pause();
+currentAudio = null;
+
 }
 
-const buffer = await audioContext.decodeAudioData(bytes.buffer);
 
-const source = audioContext.createBufferSource();
+/* create audio */
 
-source.buffer = buffer;
-source.connect(audioContext.destination);
+const audio = new Audio(audioSrc);
 
-source.start(0);
+audio.preload = "auto";
 
-await new Promise(resolve=>{
-source.onended = resolve;
+currentAudio = audio;
+
+
+/* wait for load */
+
+await new Promise((resolve) => {
+
+audio.onloadeddata = resolve;
+
+});
+
+
+/* play */
+
+await audio.play();
+
+
+/* wait until finish */
+
+await new Promise((resolve) => {
+
+audio.onended = resolve;
+
 });
 
 } catch (error) {
