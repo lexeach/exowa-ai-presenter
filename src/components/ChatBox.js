@@ -86,14 +86,15 @@ console.error("AI error:",err);
 
 if(conversationRef.current){
 
+setListening(true);
+
 setTimeout(()=>{
 
 try{
-recognition.start();
-setListening(true);
+recognitionRef.current.start();
 }catch(e){}
 
-},1500);
+},400);
 
 }
 
@@ -138,6 +139,21 @@ console.log("Speech error:",event);
 /* recognition ended */
 
 recognition.onend = ()=>{
+
+if(conversationRef.current){
+
+setTimeout(()=>{
+
+try{
+recognition.start();
+setListening(true);
+}catch(e){}
+
+},600);
+
+}
+
+};
 
 if(conversationRef.current && !speakingRef.current){
 
