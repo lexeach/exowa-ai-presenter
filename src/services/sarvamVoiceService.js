@@ -41,24 +41,28 @@ const audio = new Audio();
 audio.src = audioSrc;
 audio.playbackRate = 0.9;
 
-/* wait until audio is fully loaded */
+/* wait until audio fully loads */
 
 await new Promise((resolve) => {
-
-audio.onloadeddata = () => {
-resolve();
-};
-
+audio.onloadedmetadata = resolve;
 });
 
-/* small delay to prevent first-word cut */
+/* small buffer delay */
 
-await new Promise((resolve) => setTimeout(resolve, 120));
+await new Promise((resolve) => setTimeout(resolve, 150));
 
 await audio.play();
 
-return new Promise((resolve) => {
-audio.onended = resolve;
+/* wait until audio ends */
+
+await new Promise((resolve) => {
+audio.onended = () => {
+
+/* extra delay so last words are not cut */
+
+setTimeout(resolve, 300);
+
+};
 });
 
 } catch (error) {
