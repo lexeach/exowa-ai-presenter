@@ -4,59 +4,65 @@ import { speakText } from "../services/sarvamVoiceService";
 
 function ChatBox({ setSpeaking }) {
 
-const [conversation,setConversation] = useState(false);
-const [listening,setListening] = useState(false);
+const [conversation, setConversation] = useState(false);
+const [listening, setListening] = useState(false);
 
 const recognitionRef = useRef(null);
-const speakingRef = useRef(false);
 const historyRef = useRef([]);
 
-useEffect(()=>{
+useEffect(() => {
 
 const SpeechRecognition =
 window.SpeechRecognition || window.webkitSpeechRecognition;
 
-if(!SpeechRecognition){
-alert("Speech recognition not supported");
+if (!SpeechRecognition) {
+alert("Speech recognition not supported in this browser");
 return;
 }
 
 const recognition = new SpeechRecognition();
 
 recognition.lang = "hi-IN";
-recognition.continuous = true;
+recognition.continuous = false;
 recognition.interimResults = false;
 recognition.maxAlternatives = 1;
 
 recognitionRef.current = recognition;
 
-/* speech detected */
 
-recognition.onresult = async (event)=>{
+/* USER SPEAKS */
 
-if(speakingRef.current) return;
+recognition.onresult = async (event) => {
 
-const question = event.results[event.results.length-1][0].transcript;
+const question = event.results[0][0].transcript;
 
-console.log("Parent:",question);
+console.log("Parent:", question);
 
-historyRef.current.push({
-role:"user",
-content:question
-});
-
-try{
-
-const answer = await askAI(question,historyRef.current);
-
-console.log("AI:",answer);
+setListening(false);
 
 historyRef.current.push({
-role:"assistant",
-content:answer
+role: "user",
+content: question
 });
 
-speakingRef.current = true;
+try {
+
+/* stop mic before AI speaks */
+
+try {
+recognition.stop();
+} catch (e) {}
+
+const answer = await askAI(question, historyRef.current);
+
+console.log("AI:", answer);
+
+historyRef.current.push({
+role: "assistant",
+content: answer
+});
+
+/* speak AI answer */
 
 setSpeaking(true);
 
@@ -64,80 +70,119 @@ await speakText(answer);
 
 setSpeaking(false);
 
-speakingRef.current = false;
+} catch (error) {
 
-}catch(err){
-
-console.error(err);
+console.error("AI error:", error);
 
 }
 
-};
+/* restart mic */
 
-/* ignore normal errors */
+if (conversation) {
 
-recognition.onerror = (event)=>{
+setTimeout(() => {
 
-if(event.error === "no-speech") return;
-if(event.error === "aborted") return;
-
-console.log("Speech error:",event);
-
-};
-
-/* restart recognition if needed */
-
-recognition.onend = ()=>{
-
-if(conversation){
-
-try{
+try {
 recognition.start();
-}catch(e){}
+setListening(true);
+} catch (e) {}
+
+}, 700);
 
 }
 
 };
 
-},[conversation,setSpeaking]);
+
+/* handle errors */
+
+recognition.onerror = (event) => {
+
+if (event.error === "no-speech") {
+return;
+}
+
+if (event.error === "aborted") {
+return;
+}
+
+if (event.error === "not-allowed") {
+
+alert("Microphone permission denied. Please allow microphone access.");
+
+return;
+}
+
+console.log("Speech error:", event);
+
+};
 
 
-/* start */
+/* recognition ended */
 
-const startConversation = ()=>{
+recognition.onend = () => {
+
+if (conversation && !listening) {
+
+setTimeout(() => {
+
+try {
+recognition.start();
+setListening(true);
+} catch (e) {}
+
+}, 700);
+
+}
+
+};
+
+}, [conversation, listening, setSpeaking]);
+
+
+/* START CONVERSATION */
+
+const startConversation = () => {
 
 setConversation(true);
 
-try{
+try {
+
 recognitionRef.current.start();
+
 setListening(true);
-}catch(e){}
+
+} catch (e) {}
 
 };
 
-/* stop */
 
-const stopConversation = ()=>{
+/* STOP CONVERSATION */
+
+const stopConversation = () => {
 
 setConversation(false);
 
-try{
+try {
 recognitionRef.current.stop();
-}catch(e){}
+} catch (e) {}
 
 setListening(false);
 
 };
 
-return(
 
-<div style={{
-marginTop:"40px",
-padding:"20px",
-border:"1px solid #ddd",
-borderRadius:"10px",
-maxWidth:"700px"
-}}>
+return (
+
+<div
+style={{
+marginTop: "40px",
+padding: "20px",
+border: "1px solid #ddd",
+borderRadius: "10px",
+maxWidth: "700px"
+}}
+>
 
 <h3>Parent Voice Interaction</h3>
 
@@ -146,11 +191,11 @@ maxWidth:"700px"
 <button
 onClick={startConversation}
 style={{
-padding:"12px",
-background:"#27AE60",
-color:"#fff",
-border:"none",
-borderRadius:"6px"
+padding: "12px",
+background: "#27AE60",
+color: "#fff",
+border: "none",
+borderRadius: "6px"
 }}
 >
 🎤 Start Conversation
@@ -163,11 +208,11 @@ borderRadius:"6px"
 <button
 onClick={stopConversation}
 style={{
-padding:"12px",
-background:"#E74C3C",
-color:"#fff",
-border:"none",
-borderRadius:"6px"
+padding: "12px",
+background: "#E74C3C",
+color: "#fff",
+border: "none",
+borderRadius: "6px"
 }}
 >
 Stop Conversation
@@ -177,7 +222,7 @@ Stop Conversation
 
 {listening && (
 
-<p style={{marginTop:"10px",color:"#E74C3C"}}>
+<p style={{ marginTop: "10px", color: "#E74C3C" }}>
 🎤 बोलिए... मैं सुन रहा हूँ
 </p>
 

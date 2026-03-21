@@ -1,7 +1,5 @@
-let audioUnlocked = false;
 let audioContext = null;
-
-/* Unlock audio (must run on user click) */
+let audioUnlocked = false;
 
 export function unlockAudio() {
 
@@ -13,7 +11,7 @@ audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
 audioUnlocked = true;
 
-console.log("Audio context unlocked");
+console.log("Audio unlocked");
 
 } catch (e) {
 
@@ -23,21 +21,22 @@ console.warn("Audio unlock failed", e);
 
 }
 
-
-/* Speak text */
-
 export async function speakText(text) {
 
 try {
 
+if (!audioContext) {
+audioContext = new (window.AudioContext || window.webkitAudioContext)();
+}
+
 console.log("TTS request:", text);
 
-const response = await fetch("/.netlify/functions/sarvamTTS", {
-method: "POST",
-headers: {
-"Content-Type": "application/json"
+const response = await fetch("/.netlify/functions/sarvamTTS",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
 },
-body: JSON.stringify({ text })
+body: JSON.stringify({text})
 });
 
 const data = await response.json();
@@ -51,8 +50,6 @@ return;
 
 const audioBase64 = data.audios[0];
 
-/* convert base64 → binary */
-
 const binary = atob(audioBase64);
 const bytes = new Uint8Array(binary.length);
 
@@ -60,23 +57,16 @@ for (let i = 0; i < binary.length; i++) {
 bytes[i] = binary.charCodeAt(i);
 }
 
-/* decode audio */
-
 const buffer = await audioContext.decodeAudioData(bytes.buffer);
-
-/* create source */
 
 const source = audioContext.createBufferSource();
 
 source.buffer = buffer;
-
 source.connect(audioContext.destination);
 
 source.start(0);
 
-/* wait until audio ends */
-
-await new Promise(resolve => {
+await new Promise(resolve=>{
 source.onended = resolve;
 });
 
