@@ -1,7 +1,5 @@
 let currentAudio = null;
 
-/* unlock audio for browser autoplay */
-
 export function unlockAudio(){
 
 try{
@@ -13,18 +11,10 @@ audio.src =
 
 audio.play().catch(()=>{});
 
-console.log("Audio unlocked");
-
-}catch(e){
-
-console.warn("Audio unlock failed",e);
+}catch(e){}
 
 }
 
-}
-
-
-/* speak AI text */
 
 export async function speakText(text){
 
@@ -53,26 +43,48 @@ const audioBase64 = data.audios[0];
 
 const audioSrc = `data:audio/wav;base64,${audioBase64}`;
 
+
+/* stop previous audio */
+
 if(currentAudio){
 currentAudio.pause();
 currentAudio=null;
 }
+
+
+/* create audio */
 
 const audio = new Audio(audioSrc);
 
 audio.preload="auto";
 audio.volume=1;
 
-currentAudio=audio;
+currentAudio = audio;
+
+
+/* wait until audio buffer ready */
 
 await new Promise(resolve=>{
-audio.onloadedmetadata=resolve;
+audio.onloadeddata = resolve;
 });
+
+
+/* small delay so first words are not cut */
+
+await new Promise(resolve=>{
+setTimeout(resolve,120);
+});
+
+
+/* play */
 
 await audio.play();
 
+
+/* wait until finish */
+
 return new Promise(resolve=>{
-audio.onended=resolve;
+audio.onended = resolve;
 });
 
 }catch(error){
