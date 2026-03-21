@@ -1,5 +1,31 @@
 let currentAudio = null;
 
+/* unlock audio for browser autoplay */
+
+export function unlockAudio(){
+
+try{
+
+const audio = new Audio();
+
+audio.src =
+"data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=";
+
+audio.play().catch(()=>{});
+
+console.log("Audio unlocked");
+
+}catch(e){
+
+console.warn("Audio unlock failed",e);
+
+}
+
+}
+
+
+/* speak AI text */
+
 export async function speakText(text){
 
 try{
