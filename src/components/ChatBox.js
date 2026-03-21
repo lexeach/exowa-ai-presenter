@@ -11,6 +11,8 @@ const recognitionRef = useRef(null);
 const historyRef = useRef([]);
 const conversationRef = useRef(false);
 
+/* create speech recognition */
+
 const startRecognition = () => {
 
 const SpeechRecognition =
@@ -29,6 +31,7 @@ setListening(true);
 
 recognition.start();
 
+/* USER SPEAKS */
 
 recognition.onresult = async (event) => {
 
@@ -45,6 +48,12 @@ content: question
 
 try {
 
+/* stop mic completely before AI speaks */
+
+try {
+recognition.abort();
+} catch(e){}
+
 const answer = await askAI(question, historyRef.current);
 
 console.log("AI:", answer);
@@ -54,28 +63,21 @@ role: "assistant",
 content: answer
 });
 
+/* speak AI answer */
+
 setSpeaking(true);
 
 await speakText(answer);
 
 setSpeaking(false);
 
-} catch (err) {
+} catch (error) {
 
-console.error("AI error:", err);
+console.error("AI error:", error);
 
 }
 
-/* stop mic so it can restart */
-
-recognition.stop();
-
-};
-
-
-/* mic restart logic */
-
-recognition.onend = () => {
+/* restart mic after speaking */
 
 if (conversationRef.current) {
 
@@ -83,12 +85,14 @@ setTimeout(() => {
 
 startRecognition();
 
-}, 400);
+}, 1500);
 
 }
 
 };
 
+
+/* error handling */
 
 recognition.onerror = (event) => {
 
@@ -107,6 +111,7 @@ console.log("Speech error:", event);
 const startConversation = () => {
 
 conversationRef.current = true;
+
 setConversation(true);
 
 startRecognition();
@@ -119,11 +124,14 @@ startRecognition();
 const stopConversation = () => {
 
 conversationRef.current = false;
+
 setConversation(false);
 
 if (recognitionRef.current) {
 
+try {
 recognitionRef.current.stop();
+} catch(e){}
 
 }
 

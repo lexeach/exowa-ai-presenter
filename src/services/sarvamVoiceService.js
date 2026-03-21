@@ -1,73 +1,57 @@
-let audioUnlocked = false;
+let currentAudio = null;
 
-export function unlockAudio() {
-  if (audioUnlocked) return;
+export async function speakText(text){
 
-  try {
-    const audio = new Audio();
-    audio.src =
-      "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=";
-    audio.play().catch(() => {});
-    audioUnlocked = true;
-  } catch (e) {
-    console.warn("Audio unlock failed", e);
-  }
-}
+try{
 
-export async function speakText(text) {
+console.log("TTS request:",text);
 
-try {
-
-const response = await fetch("/.netlify/functions/sarvamTTS", {
-method: "POST",
-headers: {
-"Content-Type": "application/json"
+const response = await fetch("/.netlify/functions/sarvamTTS",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
 },
-body: JSON.stringify({ text })
+body: JSON.stringify({text})
 });
 
 const data = await response.json();
 
-if (!data.audios || data.audios.length === 0) {
-console.error("No audio returned", data);
+console.log("TTS response:",data);
+
+if(!data.audios || data.audios.length===0){
+console.error("No audio returned");
 return;
 }
 
 const audioBase64 = data.audios[0];
+
 const audioSrc = `data:audio/wav;base64,${audioBase64}`;
 
-const audio = new Audio();
+if(currentAudio){
+currentAudio.pause();
+currentAudio=null;
+}
 
-audio.src = audioSrc;
-audio.playbackRate = 0.9;
+const audio = new Audio(audioSrc);
 
-/* wait until audio fully loads */
+audio.preload="auto";
+audio.volume=1;
 
-await new Promise((resolve) => {
-audio.onloadedmetadata = resolve;
+currentAudio=audio;
+
+await new Promise(resolve=>{
+audio.onloadedmetadata=resolve;
 });
-
-/* small buffer delay */
-
-await new Promise((resolve) => setTimeout(resolve, 150));
 
 await audio.play();
 
-/* wait until audio ends */
-
-await new Promise((resolve) => {
-audio.onended = () => {
-
-/* extra delay so last words are not cut */
-
-setTimeout(resolve, 300);
-
-};
+return new Promise(resolve=>{
+audio.onended=resolve;
 });
 
-} catch (error) {
+}catch(error){
 
-console.error("Voice error:", error);
+console.error("Voice error:",error);
 
 }
 
