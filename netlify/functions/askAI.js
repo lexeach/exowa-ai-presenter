@@ -1,86 +1,99 @@
-const OpenAI = require("openai");
+const { exowaKnowledge } = require("../../src/data/exowaKnowledgeBase");
 
-exports.handler = async function (event) {
+exports.handler = async function(event){
 
-try {
+try{
 
-if (event.httpMethod !== "POST") {
+if(event.httpMethod !== "POST"){
 return {
-statusCode: 405,
-body: "POST request required"
+statusCode:405,
+body:"POST required"
 };
 }
 
-const { question, history } = JSON.parse(event.body || "{}");
+const { question } = JSON.parse(event.body || "{}");
 
-if (!question) {
-return {
-statusCode: 400,
-body: JSON.stringify({ error: "Question is required" })
-};
+const q = question.toLowerCase();
+
+let reply = "";
+
+/* class coverage */
+
+if(q.includes("class") || q.includes("कक्षा")){
+
+reply = exowaKnowledge.commonQuestions.classCoverage;
+
 }
 
-const openai = new OpenAI({
-apiKey: process.env.OPENAI_API_KEY
-});
+/* practice */
 
-const systemPrompt = `
-You are an AI education consultant for Exowa.
+else if(q.includes("practice") || q.includes("प्रैक्टिस")){
 
-Speak in simple conversational Hindi.
+reply = exowaKnowledge.commonQuestions.practice;
 
-Your role:
+}
 
-• Explain Exowa platform to parents
-• Help them understand benefits
-• Answer questions about learning
-• Ask follow-up questions
-• Sound friendly and human
+/* exam */
 
-Important speaking style:
+else if(q.includes("exam") || q.includes("तैयारी")){
 
-Use pauses like "..."
+reply = exowaKnowledge.commonQuestions.examPreparation;
 
-Example tone:
+}
 
-"देखिए...
-Exowa एक AI based mock test platform है...
-जो बच्चों को unlimited practice देता है।"
+/* parents */
 
-Keep responses short and natural.
+else if(q.includes("parent") || q.includes("माता") || q.includes("अभिभावक")){
 
-Always try to ask one follow-up question.
-`;
+reply = exowaKnowledge.commonQuestions.parentsBenefit;
 
-const messages = [
-{ role: "system", content: systemPrompt },
-...(history || []),
-{ role: "user", content: question }
-];
+}
 
-const completion = await openai.chat.completions.create({
-model: "gpt-4o-mini",
-messages: messages,
-temperature: 0.7
-});
+/* subjects */
 
-return {
-statusCode: 200,
-headers: {
-"Content-Type": "application/json"
-},
-body: JSON.stringify(completion)
-};
+else if(q.includes("subject") || q.includes("विषय")){
 
-} catch (error) {
+reply = "Exowa में ये subjects available हैं: " + exowaKnowledge.subjects.join(", ");
 
-console.error("AI ERROR:", error);
+}
 
-return {
-statusCode: 500,
+/* features */
+
+else if(q.includes("feature") || q.includes("सुविधा")){
+
+reply = "Exowa के main features हैं: " + exowaKnowledge.features.join(", ");
+
+}
+
+/* pricing */
+
+else if(q.includes("price") || q.includes("fees") || q.includes("price")){
+
+reply = exowaKnowledge.pricing.note;
+
+}
+
+/* default */
+
+else{
+
+reply =
+"Exowa एक AI based mock test platform है जो class 6 से 12 तक के students को unlimited practice provide करता है। क्या आप इसके features या subjects के बारे में जानना चाहेंगे?";
+
+}
+
+return{
+statusCode:200,
 body: JSON.stringify({
-error: error.message
+answer: reply
 })
+};
+
+}catch(error){
+
+return{
+statusCode:500,
+body: JSON.stringify({error:error.message})
 };
 
 }
