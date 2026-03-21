@@ -1,32 +1,22 @@
-let currentAudio = null;
+let audioUnlocked = false;
 
 export function unlockAudio() {
+  if (audioUnlocked) return;
 
-try {
-
-const audio = new Audio();
-
-audio.src =
-"data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=";
-
-audio.play().catch(()=>{});
-
-console.log("Audio unlocked");
-
-} catch (e) {
-
-console.warn("Audio unlock failed", e);
-
+  try {
+    const audio = new Audio();
+    audio.src =
+      "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=";
+    audio.play().catch(() => {});
+    audioUnlocked = true;
+  } catch (e) {
+    console.warn("Audio unlock failed", e);
+  }
 }
-
-}
-
 
 export async function speakText(text) {
 
 try {
-
-console.log("TTS request:", text);
 
 const response = await fetch("/.netlify/functions/sarvamTTS", {
 method: "POST",
@@ -38,57 +28,41 @@ body: JSON.stringify({ text })
 
 const data = await response.json();
 
-console.log("TTS response:", data);
-
 if (!data.audios || data.audios.length === 0) {
-console.error("No audio returned");
+console.error("No audio returned", data);
 return;
 }
 
 const audioBase64 = data.audios[0];
-
 const audioSrc = `data:audio/wav;base64,${audioBase64}`;
 
+const audio = new Audio();
 
-/* stop previous audio */
+audio.src = audioSrc;
+audio.playbackRate = 0.9;
 
-if (currentAudio) {
-
-currentAudio.pause();
-currentAudio = null;
-
-}
-
-
-/* create audio */
-
-const audio = new Audio(audioSrc);
-
-audio.preload = "auto";
-
-currentAudio = audio;
-
-
-/* wait for load */
+/* wait until audio fully loads */
 
 await new Promise((resolve) => {
-
-audio.onloadeddata = resolve;
-
+audio.onloadedmetadata = resolve;
 });
 
+/* small buffer delay */
 
-/* play */
+await new Promise((resolve) => setTimeout(resolve, 150));
 
 await audio.play();
 
-
-/* wait until finish */
+/* wait until audio ends */
 
 await new Promise((resolve) => {
+audio.onended = () => {
 
-audio.onended = resolve;
+/* extra delay so last words are not cut */
 
+setTimeout(resolve, 300);
+
+};
 });
 
 } catch (error) {
