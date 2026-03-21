@@ -15,34 +15,44 @@ export function unlockAudio() {
 }
 
 export async function speakText(text) {
-  try {
-    const response = await fetch("/.netlify/functions/sarvamTTS", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ text }),
-    });
 
-    const data = await response.json();
+try {
 
-    if (!data.audios || data.audios.length === 0) {
-      console.error("No audio returned", data);
-      return;
-    }
+const response = await fetch("/.netlify/functions/sarvamTTS", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({ text })
+});
 
-    const audioBase64 = data.audios[0];
-    const audioSrc = `data:audio/wav;base64,${audioBase64}`;
+const data = await response.json();
 
-    const audio = new Audio(audioSrc);
-    audio.playbackRate = .85;
+if (!data.audios || data.audios.length === 0) {
+console.error("No audio returned", data);
+return;
+}
 
-    await audio.play();
+const audioBase64 = data.audios[0];
 
-    return new Promise((resolve) => {
-      audio.onended = resolve;
-    });
-  } catch (error) {
-    console.error("Voice error:", error);
-  }
+const audioSrc = `data:audio/wav;base64,${audioBase64}`;
+
+const audio = new Audio(audioSrc);
+
+audio.playbackRate = 0.9;
+
+/* ensure audio loads */
+
+await audio.play();
+
+return new Promise((resolve) => {
+audio.onended = resolve;
+});
+
+} catch (error) {
+
+console.error("Voice error:", error);
+
+}
+
 }

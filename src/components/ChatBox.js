@@ -65,7 +65,16 @@ content: answer
 
 setSpeaking(true);
 
+// stop listening before speaking
+try {
+recognitionRef.current.stop();
+} catch (e) {}
+
+setSpeaking(true);
+
 await speakText(answer);
+
+setSpeaking(false);
 
 setSpeaking(false);
 
@@ -82,11 +91,11 @@ if (conversationRef.current) {
 setTimeout(() => {
 
 try {
-recognition.start();
+recognitionRef.current.start();
 setListening(true);
 } catch (err) {}
 
-}, 700);
+}, 1000);
 
 }
 
