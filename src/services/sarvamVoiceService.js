@@ -1,7 +1,7 @@
 let audioUnlocked = false;
-let currentAudio = null;
+let audioContext = null;
 
-/* Unlock browser audio */
+/* Unlock audio (must run on user click) */
 
 export function unlockAudio() {
 
@@ -9,16 +9,11 @@ if (audioUnlocked) return;
 
 try {
 
-const audio = new Audio();
-
-audio.src =
-"data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=";
-
-audio.play().catch(()=>{});
+audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
 audioUnlocked = true;
 
-console.log("Audio unlocked");
+console.log("Audio context unlocked");
 
 } catch (e) {
 
@@ -29,7 +24,7 @@ console.warn("Audio unlock failed", e);
 }
 
 
-/* Speak AI text */
+/* Speak text */
 
 export async function speakText(text) {
 
@@ -37,86 +32,57 @@ try {
 
 console.log("TTS request:", text);
 
-const response = await fetch("/.netlify/functions/sarvamTTS",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
+const response = await fetch("/.netlify/functions/sarvamTTS", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
 },
-
-body: JSON.stringify({text})
-
+body: JSON.stringify({ text })
 });
 
 const data = await response.json();
 
 console.log("TTS response:", data);
 
-if(!data.audios || data.audios.length === 0){
-
+if (!data.audios || data.audios.length === 0) {
 console.error("No audio returned");
-
 return;
-
 }
 
 const audioBase64 = data.audios[0];
 
-const audioSrc = `data:audio/wav;base64,${audioBase64}`;
+/* convert base64 → binary */
 
+const binary = atob(audioBase64);
+const bytes = new Uint8Array(binary.length);
 
-/* stop previous audio */
-
-if(currentAudio){
-currentAudio.pause();
-currentAudio = null;
+for (let i = 0; i < binary.length; i++) {
+bytes[i] = binary.charCodeAt(i);
 }
 
+/* decode audio */
 
-/* create DOM audio */
+const buffer = await audioContext.decodeAudioData(bytes.buffer);
 
-const audio = document.createElement("audio");
+/* create source */
 
-audio.src = audioSrc;
+const source = audioContext.createBufferSource();
 
-audio.preload = "auto";
+source.buffer = buffer;
 
-audio.playbackRate = 0.9;
+source.connect(audioContext.destination);
 
-document.body.appendChild(audio);
+source.start(0);
 
-currentAudio = audio;
+/* wait until audio ends */
 
-
-/* wait until audio ready */
-
-await new Promise(resolve=>{
-audio.onloadeddata = resolve;
+await new Promise(resolve => {
+source.onended = resolve;
 });
 
+} catch (error) {
 
-/* play */
-
-await audio.play();
-
-
-/* wait until finish */
-
-await new Promise(resolve=>{
-audio.onended = resolve;
-});
-
-
-/* cleanup */
-
-audio.remove();
-
-currentAudio = null;
-
-}catch(error){
-
-console.error("Voice error:",error);
+console.error("Voice error:", error);
 
 }
 
