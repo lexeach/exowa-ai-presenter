@@ -6,9 +6,9 @@ function ChatBox({ setSpeaking }) {
 
 const [listening,setListening] = useState(false);
 const [conversation,setConversation] = useState(false);
+const [history,setHistory] = useState([]);
 
 const recognitionRef = useRef(null);
-const [history, setHistory] = useState([]);
 
 const startRecognition = () => {
 
@@ -28,26 +28,39 @@ recognition.interimResults = false;
 
 recognitionRef.current = recognition;
 
-recognition.start();
 setListening(true);
+
+recognition.start();
 
 recognition.onresult = async (event)=>{
 
 const question = event.results[0][0].transcript;
 
+console.log("Parent:",question);
+
 setListening(false);
+
+/* add user question to history */
 
 const newHistory = [
 ...history,
 { role: "user", content: question }
 ];
 
-const answer = await askAI(question, newHistory);
+/* ask AI */
+
+const answer = await askAI(question,newHistory);
+
+console.log("AI:",answer);
+
+/* save AI answer */
 
 setHistory([
 ...newHistory,
 { role: "assistant", content: answer }
 ]);
+
+/* speak */
 
 setSpeaking(true);
 
@@ -55,14 +68,36 @@ await speakText(answer);
 
 setSpeaking(false);
 
+/* restart listening AFTER speaking */
+
 if(conversation){
+
+setTimeout(()=>{
 startRecognition();
+},500);
+
 }
 
 };
 
-recognition.onerror = ()=>{
+recognition.onerror = (error)=>{
+console.log("Speech error:",error);
 setListening(false);
+
+if(conversation){
+
+setTimeout(()=>{
+startRecognition();
+},1000);
+
+}
+
+};
+
+recognition.onend = ()=>{
+
+setListening(false);
+
 };
 
 };
