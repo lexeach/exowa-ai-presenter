@@ -6,9 +6,12 @@ function ChatBox({ setSpeaking }) {
 
 const [listening, setListening] = useState(false);
 const [conversation, setConversation] = useState(false);
-const [history, setHistory] = useState([]);
 
 const recognitionRef = useRef(null);
+
+/* IMPORTANT: refs for stable loop */
+const conversationRef = useRef(false);
+const historyRef = useRef([]);
 
 useEffect(() => {
 
@@ -16,7 +19,7 @@ const SpeechRecognition =
 window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if (!SpeechRecognition) {
-alert("Speech recognition not supported in this browser");
+alert("Speech recognition not supported");
 return;
 }
 
@@ -28,7 +31,7 @@ recognition.interimResults = false;
 
 recognitionRef.current = recognition;
 
-/* USER SPEAKS */
+/* when parent speaks */
 
 recognition.onresult = async (event) => {
 
@@ -38,25 +41,27 @@ console.log("Parent:", question);
 
 setListening(false);
 
-/* add question to history */
+/* update history */
 
-const newHistory = [
-...history,
-{ role: "user", content: question }
-];
+historyRef.current.push({
+role: "user",
+content: question
+});
 
 try {
 
-const answer = await askAI(question, newHistory);
+const answer = await askAI(question, historyRef.current);
 
 console.log("AI:", answer);
 
-/* save AI answer */
+/* save AI response */
 
-setHistory([
-...newHistory,
-{ role: "assistant", content: answer }
-]);
+historyRef.current.push({
+role: "assistant",
+content: answer
+});
+
+/* speak */
 
 setSpeaking(true);
 
@@ -64,33 +69,34 @@ await speakText(answer);
 
 setSpeaking(false);
 
-} catch (err) {
+} catch (error) {
 
-console.error("AI error:", err);
+console.error("AI error:", error);
 
 }
 
 /* restart listening */
 
-if (conversation) {
+if (conversationRef.current) {
 
 setTimeout(() => {
 
+try {
 recognition.start();
 setListening(true);
+} catch (err) {}
 
-}, 800);
+}, 700);
 
 }
 
 };
 
-/* error handling */
+/* speech error */
 
 recognition.onerror = (e) => {
 
 console.log("Speech error:", e);
-
 setListening(false);
 
 };
@@ -99,31 +105,38 @@ setListening(false);
 
 recognition.onend = () => {
 
-if (conversation) {
+if (conversationRef.current && !listening) {
 
 setTimeout(() => {
 
+try {
 recognition.start();
 setListening(true);
+} catch (err) {}
 
-}, 800);
+}, 700);
 
 }
 
 };
 
-}, [conversation, history, setSpeaking]);
+}, [setSpeaking, listening]);
 
 /* START CONVERSATION */
 
 const startConversation = () => {
 
+conversationRef.current = true;
 setConversation(true);
 
 if (recognitionRef.current) {
 
+try {
+
 recognitionRef.current.start();
 setListening(true);
+
+} catch (err) {}
 
 }
 
@@ -133,6 +146,7 @@ setListening(true);
 
 const stopConversation = () => {
 
+conversationRef.current = false;
 setConversation(false);
 
 if (recognitionRef.current) {
