@@ -8,6 +8,7 @@ const [listening,setListening] = useState(false);
 const [conversation,setConversation] = useState(false);
 
 const recognitionRef = useRef(null);
+const [history, setHistory] = useState([]);
 
 const startRecognition = () => {
 
@@ -34,13 +35,19 @@ recognition.onresult = async (event)=>{
 
 const question = event.results[0][0].transcript;
 
-console.log("Parent:",question);
-
 setListening(false);
 
-const answer = await askAI(question);
+const newHistory = [
+...history,
+{ role: "user", content: question }
+];
 
-console.log("AI:",answer);
+const answer = await askAI(question, newHistory);
+
+setHistory([
+...newHistory,
+{ role: "assistant", content: answer }
+]);
 
 setSpeaking(true);
 
@@ -48,7 +55,6 @@ await speakText(answer);
 
 setSpeaking(false);
 
-/* start listening again if conversation mode */
 if(conversation){
 startRecognition();
 }

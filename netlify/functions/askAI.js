@@ -2,63 +2,68 @@ exports.handler = async function (event) {
 
 try {
 
-const API_KEY = process.env.OPENAI_API_KEY;
+const OpenAI = require("openai");
 
-if (!event.body) {
+const openai = new OpenAI({
+apiKey: process.env.OPENAI_API_KEY
+});
+
+exports.handler = async function(event){
+
+try{
+
+const { question, history } = JSON.parse(event.body);
+
+const systemPrompt = `
+You are an AI education consultant for Exowa.
+
+Speak in simple conversational Hindi.
+
+Your job:
+
+• Explain Exowa platform
+• Help parents understand benefits
+• Ask questions back to parents
+• Handle objections
+• Keep answers short
+• Sound friendly and human
+
+Important:
+
+Use pauses like "...".
+
+Example speaking style:
+
+"देखिए...
+Exowa एक AI based mock test platform है...
+जो बच्चों को unlimited practice देता है।"
+
+Always try to ask one follow-up question.
+`;
+
+const messages = [
+{ role:"system", content: systemPrompt },
+...(history || [])
+];
+
+const completion = await openai.chat.completions.create({
+
+model:"gpt-4o-mini",
+messages: messages,
+temperature:0.7
+
+});
+
 return {
-statusCode: 400,
-body: JSON.stringify({ error: "No request body received" })
+statusCode:200,
+body: JSON.stringify(completion)
 };
-}
 
-const body = JSON.parse(event.body);
-const question = body.question;
-
-if (!question) {
-return {
-statusCode: 400,
-body: JSON.stringify({ error: "Question missing" })
-};
-}
-
-const response = await fetch(
-"https://api.openai.com/v1/chat/completions",
-{
-method: "POST",
-headers: {
-"Content-Type": "application/json",
-"Authorization": `Bearer ${API_KEY}`
-},
-body: JSON.stringify({
-model: "gpt-4o-mini",
-messages: [
-{
-role: "system",
-content: "You explain the Exowa AI mock test platform to parents."
-},
-{
-role: "user",
-content: question
-}
-]
-})
-}
-);
-
-const data = await response.json();
+}catch(error){
 
 return {
-statusCode: 200,
-body: JSON.stringify(data)
-};
-
-} catch (error) {
-
-return {
-statusCode: 500,
-body: JSON.stringify({
-error: error.message
-})
+statusCode:500,
+body: JSON.stringify({error:error.message})
 };
 
 }

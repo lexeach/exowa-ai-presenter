@@ -1,4 +1,4 @@
-export async function askAI(question){
+export async function askAI(question, history = []){
 
 const response = await fetch("/.netlify/functions/askAI",{
 
@@ -9,7 +9,8 @@ headers:{
 },
 
 body: JSON.stringify({
-question: question
+question: question,
+history: history
 })
 
 });
