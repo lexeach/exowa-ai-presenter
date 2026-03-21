@@ -4,13 +4,14 @@ import { speakText } from "../services/sarvamVoiceService";
 
 function ChatBox({ setSpeaking }) {
 
-const [conversation,setConversation] = useState(false);
-const [listening,setListening] = useState(false);
+const [conversation, setConversation] = useState(false);
+const [listening, setListening] = useState(false);
 
 const recognitionRef = useRef(null);
 const historyRef = useRef([]);
+const conversationRef = useRef(false);
 
-const createRecognition = () => {
+const startRecognition = () => {
 
 const SpeechRecognition =
 window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -24,33 +25,34 @@ recognition.maxAlternatives = 1;
 
 recognitionRef.current = recognition;
 
-/* USER SPEAKS */
+setListening(true);
 
-recognition.onresult = async (event)=>{
+recognition.start();
+
+
+recognition.onresult = async (event) => {
 
 const question = event.results[0][0].transcript;
 
-console.log("Parent:",question);
+console.log("Parent:", question);
 
 setListening(false);
 
 historyRef.current.push({
-role:"user",
-content:question
+role: "user",
+content: question
 });
 
-try{
+try {
 
-const answer = await askAI(question,historyRef.current);
+const answer = await askAI(question, historyRef.current);
 
-console.log("AI:",answer);
+console.log("AI:", answer);
 
 historyRef.current.push({
-role:"assistant",
-content:answer
+role: "assistant",
+content: answer
 });
-
-/* speak AI answer */
 
 setSpeaking(true);
 
@@ -58,94 +60,87 @@ await speakText(answer);
 
 setSpeaking(false);
 
-}catch(err){
+} catch (err) {
 
-console.error("AI error:",err);
+console.error("AI error:", err);
 
 }
 
-/* restart mic */
+/* stop mic so it can restart */
 
-if(conversation){
+recognition.stop();
 
-setTimeout(()=>{
-startListening();
-},600);
+};
+
+
+/* mic restart logic */
+
+recognition.onend = () => {
+
+if (conversationRef.current) {
+
+setTimeout(() => {
+
+startRecognition();
+
+}, 400);
 
 }
 
 };
 
-recognition.onerror = (event)=>{
 
-if(event.error === "no-speech") return;
-if(event.error === "aborted") return;
+recognition.onerror = (event) => {
 
-console.log("Speech error:",event);
+if (event.error === "no-speech") return;
+if (event.error === "aborted") return;
+
+console.log("Speech error:", event);
 
 };
-
-};
-
-
-/* start listening */
-
-const startListening = ()=>{
-
-try{
-
-createRecognition();
-
-recognitionRef.current.start();
-
-setListening(true);
-
-console.log("Mic started");
-
-}catch(e){
-
-console.log("Mic start error",e);
-
-}
 
 };
 
 
 /* start conversation */
 
-const startConversation = ()=>{
+const startConversation = () => {
 
+conversationRef.current = true;
 setConversation(true);
 
-startListening();
+startRecognition();
 
 };
 
 
 /* stop conversation */
 
-const stopConversation = ()=>{
+const stopConversation = () => {
 
+conversationRef.current = false;
 setConversation(false);
 
-try{
+if (recognitionRef.current) {
+
 recognitionRef.current.stop();
-}catch(e){}
+
+}
 
 setListening(false);
 
 };
 
 
-return(
+return (
 
 <div
 style={{
-marginTop:"40px",
-padding:"20px",
-border:"1px solid #ddd",
-borderRadius:"10px",
-maxWidth:"700px"
+marginTop: "40px",
+padding: "20px",
+border: "1px solid #ddd",
+borderRadius: "10px",
+maxWidth: "700px"
 }}
 >
 
@@ -156,11 +151,11 @@ maxWidth:"700px"
 <button
 onClick={startConversation}
 style={{
-padding:"12px",
-background:"#27AE60",
-color:"#fff",
-border:"none",
-borderRadius:"6px"
+padding: "12px",
+background: "#27AE60",
+color: "#fff",
+border: "none",
+borderRadius: "6px"
 }}
 >
 🎤 Start Conversation
@@ -173,11 +168,11 @@ borderRadius:"6px"
 <button
 onClick={stopConversation}
 style={{
-padding:"12px",
-background:"#E74C3C",
-color:"#fff",
-border:"none",
-borderRadius:"6px"
+padding: "12px",
+background: "#E74C3C",
+color: "#fff",
+border: "none",
+borderRadius: "6px"
 }}
 >
 Stop Conversation
@@ -187,7 +182,7 @@ Stop Conversation
 
 {listening && (
 
-<p style={{marginTop:"10px",color:"#E74C3C"}}>
+<p style={{ marginTop: "10px", color: "#E74C3C" }}>
 🎤 बोलिए... मैं सुन रहा हूँ
 </p>
 
