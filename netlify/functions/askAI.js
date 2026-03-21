@@ -1,47 +1,45 @@
-const fetch = require("node-fetch");
-const { exowaKnowledge } = require("../../src/data/exowaKnowledgeBase");
-
 exports.handler = async function (event) {
 
 try {
 
-const body = JSON.parse(event.body || "{}");
+const API_KEY = process.env.OPENAI_API_KEY;
 
-const question = body.question || body.prompt || "";
-
-if(!question){
+if (!event.body) {
 return {
-statusCode:400,
-body:JSON.stringify({error:"Question missing"})
+statusCode: 400,
+body: JSON.stringify({ error: "No request body received" })
 };
 }
 
-const systemPrompt = `
-You are an AI presenter explaining Exowa to parents.
+const body = JSON.parse(event.body);
+const question = body.question;
 
-Knowledge base:
-${JSON.stringify(exowaKnowledge)}
-
-Rules:
-- Answer only about Exowa
-- Use simple language
-- Maximum 3 sentences
-- Focus on student benefits
-`;
+if (!question) {
+return {
+statusCode: 400,
+body: JSON.stringify({ error: "Question missing" })
+};
+}
 
 const response = await fetch(
 "https://api.openai.com/v1/chat/completions",
 {
-method:"POST",
-headers:{
-"Content-Type":"application/json",
-"Authorization":`Bearer ${process.env.OPENAI_API_KEY}`
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"Authorization": `Bearer ${API_KEY}`
 },
-body:JSON.stringify({
-model:"gpt-4o-mini",
-messages:[
-{role:"system",content:systemPrompt},
-{role:"user",content:question}
+body: JSON.stringify({
+model: "gpt-4o-mini",
+messages: [
+{
+role: "system",
+content: "You explain the Exowa AI mock test platform to parents."
+},
+{
+role: "user",
+content: question
+}
 ]
 })
 }
@@ -49,24 +47,18 @@ messages:[
 
 const data = await response.json();
 
-console.log("OpenAI response:",data);
-
-const answer =
-data?.choices?.[0]?.message?.content ||
-"Sorry, I could not answer that.";
-
 return {
-statusCode:200,
-body:JSON.stringify({answer})
+statusCode: 200,
+body: JSON.stringify(data)
 };
 
-}catch(error){
-
-console.error("AI error:",error);
+} catch (error) {
 
 return {
-statusCode:500,
-body:JSON.stringify({error:error.message})
+statusCode: 500,
+body: JSON.stringify({
+error: error.message
+})
 };
 
 }
