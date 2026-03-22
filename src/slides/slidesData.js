@@ -313,12 +313,12 @@ Success कैसे मिलेगी?
 
 (2 सेकंड pause)
 
-यही success formula है।"
+यही success formula है।`
 },
 {
 title: "Call To Action",
 image: "/slides/slide18.png",
-voice: "अगर आप इस opportunity को explore करना चाहती हैं,
+voice: `अगर आप इस opportunity को explore करना चाहती हैं,
 
 तो
 
