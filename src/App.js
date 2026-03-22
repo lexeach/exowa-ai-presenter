@@ -7,6 +7,20 @@ import AvatarPresenter from "./components/AvatarPresenter";
 import { slides } from "./slides/slidesData";
 import { preloadSpeech } from "./services/sarvamVoiceService";
 
+
+function App() {
+
+const [currentSlide, setCurrentSlide] = useState(0);
+const [speaking, setSpeaking] = useState(false);
+const [started, setStarted] = useState(false);
+
+const [qaMode, setQaMode] = useState(false);
+const [qaIntroDone, setQaIntroDone] = useState(false);
+
+const [isFullscreen, setIsFullscreen] = useState(false);
+
+const slideContainerRef = useRef(null);
+
 useEffect(() => {
 
 if(started){
@@ -21,18 +35,6 @@ preloadSpeech(2, slides[2]?.voice);
 
 }, [started]);
 
-function App() {
-
-const [currentSlide, setCurrentSlide] = useState(0);
-const [speaking, setSpeaking] = useState(false);
-const [started, setStarted] = useState(false);
-
-const [qaMode, setQaMode] = useState(false);
-const [qaIntroDone, setQaIntroDone] = useState(false);
-
-const [isFullscreen, setIsFullscreen] = useState(false);
-
-const slideContainerRef = useRef(null);
 
 
 /* FULLSCREEN TOGGLE */
