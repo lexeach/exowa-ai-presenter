@@ -6,18 +6,17 @@ return (
 
 <div
 style={{
-width:"100vw",
-height:"100vh",
+width:"100%",
+height:"100%",
 display:"flex",
 alignItems:"center",
-justifyContent:"center",
-background:"#000"
+justifyContent:"center"
 }}
 >
 
 <img
 src={slide.image}
-alt="slide"
+alt=""
 style={{
 maxWidth:"100%",
 maxHeight:"100%",

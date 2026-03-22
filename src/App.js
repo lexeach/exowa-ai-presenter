@@ -56,7 +56,29 @@ document.exitFullscreen();
 
 };
 
+const [isMobileFull, setIsMobileFull] = useState(false);
 
+const toggleFullscreen = () => {
+
+if(window.innerWidth < 768){
+
+/* mobile fullscreen */
+
+setIsMobileFull(!isMobileFull);
+
+}else{
+
+/* desktop fullscreen */
+
+if(!document.fullscreenElement){
+containerRef.current.requestFullscreen();
+}else{
+document.exitFullscreen();
+}
+
+}
+
+};
 /* NEXT SLIDE */
 
 const nextSlide = () => {
@@ -97,9 +119,13 @@ return (
 ref={containerRef}
 style={{
 fontFamily:"Arial",
-width:"100vw",
-height:"100vh",
+width: isMobileFull ? "100vw" : "100%",
+height: isMobileFull ? "100vh" : "auto",
+position: isMobileFull ? "fixed" : "relative",
+top:0,
+left:0,
 background:"#000",
+zIndex: isMobileFull ? 9999 : "auto",
 display:"flex",
 flexDirection:"column",
 alignItems:"center",
