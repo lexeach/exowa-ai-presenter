@@ -46,6 +46,14 @@ document.exitFullscreen();
 
 }
 
+{!document.fullscreenElement && (
+<div style={{marginTop:"20px"}}>
+<button onClick={prevSlide}>Previous</button>
+<button onClick={nextSlide}>Next</button>
+<button onClick={toggleFullscreen}>Fullscreen</button>
+</div>
+)}
+
 };
 
 
@@ -89,12 +97,13 @@ return (
 ref={containerRef}
 style={{
 fontFamily:"Arial",
-width:"100%",
-height:"100%",
+width:"100vw",
+height:"100vh",
+background:"#000",
 display:"flex",
 flexDirection:"column",
 alignItems:"center",
-justifyContent:"flex-start"
+justifyContent:"center"
 }}
 >
 

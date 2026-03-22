@@ -7,10 +7,9 @@ return (
 <div
 style={{
 position:"fixed",
-right:"20px",
-bottom:"20px",
-zIndex:9999,
-transition:"all 0.3s ease"
+right:"25px",
+bottom:"25px",
+zIndex:1000
 }}
 >
 

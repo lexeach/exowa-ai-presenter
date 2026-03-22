@@ -6,12 +6,12 @@ return (
 
 <div
 style={{
+width:"100vw",
+height:"100vh",
 display:"flex",
-justifyContent:"center",
 alignItems:"center",
-width:"100%",
-height:"80vh",
-overflow:"hidden"
+justifyContent:"center",
+background:"#000"
 }}
 >
 
@@ -21,9 +21,7 @@ alt="slide"
 style={{
 maxWidth:"100%",
 maxHeight:"100%",
-objectFit:"contain",
-display:"block",
-margin:"0 auto"
+objectFit:"contain"
 }}
 />
 
