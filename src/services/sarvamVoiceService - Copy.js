@@ -138,7 +138,9 @@ currentAudio = audio;
 
 /* WAIT BUFFER */
 
-audio.load();
+await new Promise(resolve=>{
+audio.oncanplaythrough=resolve;
+});
 
 
 /* PLAY */
