@@ -11,6 +11,7 @@ function App() {
 const [currentSlide, setCurrentSlide] = useState(0);
 const [speaking, setSpeaking] = useState(false);
 const [started, setStarted] = useState(false);
+
 const [qaMode, setQaMode] = useState(false);
 const [qaIntroDone, setQaIntroDone] = useState(false);
 
@@ -57,24 +58,24 @@ margin: "auto"
 EXOWA AI Presenter
 </h1>
 
-{/* AI Avatar */}
+{/* Avatar */}
 <AvatarPresenter speaking={speaking} />
 
 {/* Slide */}
 <SlideViewer slide={slides[currentSlide]} />
 
-{/* SLIDE VOICE NARRATION */}
+{/* Slide narration */}
 {started && !qaMode && (
 
 <VoicePlayer
-key={currentSlide}
+key={"slide-" + currentSlide}
 text={slides[currentSlide]?.voice}
 onStart={() => setSpeaking(true)}
 onFinish={() => {
 
 setSpeaking(false);
 
-/* Slide 20 finished → Start Q&A mode */
+/* Slide 20 finished */
 
 if(currentSlide === 19){
 
@@ -84,7 +85,7 @@ return;
 
 }
 
-/* Move to next slide */
+/* Next slide */
 
 setCurrentSlide(prev => {
 
@@ -101,13 +102,14 @@ return prev;
 
 )}
 
-{/* Q&A INTRO VOICE */}
+{/* Q&A Intro Voice */}
 {qaMode && !qaIntroDone && (
 
 <VoicePlayer
+key="qa-intro"
 text="अगर आपका कोई सवाल है तो आप पूछ सकते हैं।"
-onStart={() => setSpeaking(true)}
-onFinish={() => {
+onStart={()=>setSpeaking(true)}
+onFinish={()=>{
 
 setSpeaking(false);
 setQaIntroDone(true);
@@ -117,7 +119,7 @@ setQaIntroDone(true);
 
 )}
 
-{/* Slide Controls */}
+{/* Controls */}
 <div
 style={{
 marginTop: "20px",
@@ -137,16 +139,16 @@ Next
 
 {!started && (
 <button
-onClick={() => {
+onClick={()=>{
 unlockAudio();
 setStarted(true);
 }}
 style={{
-background: "#2F80ED",
-color: "#fff",
-border: "none",
-padding: "10px 16px",
-borderRadius: "6px"
+background:"#2F80ED",
+color:"#fff",
+border:"none",
+padding:"10px 16px",
+borderRadius:"6px"
 }}
 >
 Start Presentation
@@ -155,9 +157,9 @@ Start Presentation
 
 </div>
 
-{/* Q&A Chat */}
+{/* ChatBox */}
 {qaMode && qaIntroDone && (
-<ChatBox setSpeaking={setSpeaking} />
+<ChatBox setSpeaking={setSpeaking}/>
 )}
 
 </div>
