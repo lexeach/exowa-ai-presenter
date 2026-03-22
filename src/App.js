@@ -15,27 +15,31 @@ const [started, setStarted] = useState(false);
 const [qaMode, setQaMode] = useState(false);
 const [qaIntroDone, setQaIntroDone] = useState(false);
 
-/* Fullscreen ref */
+const [isFullscreen, setIsFullscreen] = useState(false);
 
 const slideContainerRef = useRef(null);
 
 
-/* Fullscreen toggle */
+/* FULLSCREEN TOGGLE */
 
 const toggleFullscreen = () => {
 
 if(!document.fullscreenElement){
 
 slideContainerRef.current.requestFullscreen();
+setIsFullscreen(true);
 
 }else{
 
 document.exitFullscreen();
+setIsFullscreen(false);
 
 }
 
 };
 
+
+/* SLIDE CONTROLS */
 
 const nextSlide = () => {
 
@@ -65,13 +69,14 @@ return prev;
 
 };
 
+
 return (
 
 <div
 style={{
 fontFamily: "Arial",
 padding: "20px",
-maxWidth: "900px",
+maxWidth: "1000px",
 margin: "auto"
 }}
 >
@@ -80,19 +85,45 @@ margin: "auto"
 EXOWA AI Presenter
 </h1>
 
-{/* Avatar */}
-<AvatarPresenter speaking={speaking} />
 
-{/* Slide container with fullscreen */}
+{/* PRESENTATION AREA */}
 
-<div ref={slideContainerRef}>
+<div
+ref={slideContainerRef}
+style={{
+position:"relative",
+background:"#000",
+padding:"20px",
+borderRadius:"10px"
+}}
+>
+
+
+{/* Slide */}
 
 <SlideViewer slide={slides[currentSlide]} />
+
+
+{/* Avatar (TED style corner) */}
+
+<div
+style={{
+position:"absolute",
+bottom:"20px",
+right:"20px",
+width:"180px"
+}}
+>
+
+<AvatarPresenter speaking={speaking} />
 
 </div>
 
 
-{/* Slide narration */}
+</div>
+
+
+{/* SLIDE NARRATION */}
 
 {started && !qaMode && (
 
@@ -114,8 +145,6 @@ return;
 
 }
 
-/* Next slide */
-
 setCurrentSlide(prev => {
 
 if(prev < slides.length - 1){
@@ -132,7 +161,7 @@ return prev;
 )}
 
 
-{/* Q&A Intro Voice */}
+{/* Q&A INTRO */}
 
 {qaMode && !qaIntroDone && (
 
@@ -151,7 +180,7 @@ setQaIntroDone(true);
 )}
 
 
-{/* Controls */}
+{/* CONTROLS */}
 
 <div
 style={{
@@ -171,7 +200,7 @@ Next
 </button>
 
 <button onClick={toggleFullscreen}>
-Full Screen
+{isFullscreen ? "Exit Full Screen" : "Full Screen"}
 </button>
 
 {!started && (
@@ -195,7 +224,7 @@ Start Presentation
 </div>
 
 
-{/* ChatBox */}
+{/* Q&A CHAT */}
 
 {qaMode && qaIntroDone && (
 <ChatBox setSpeaking={setSpeaking} autoStart={true} />
