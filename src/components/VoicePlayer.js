@@ -12,19 +12,7 @@ if (!text) return;
 
 try{
 
-/* START AVATAR SPEAKING */
-
-if(onStart) onStart();
-
-/* PLAY CURRENT SLIDE VOICE */
-
-await speakText(text, slideIndex);
-
-/* FINISH CALLBACK */
-
-if(onFinish) onFinish();
-
-/* PRELOAD NEXT SLIDE VOICE */
+/* PRELOAD NEXT SLIDE FIRST */
 
 const nextSlide = slideIndex + 1;
 
@@ -33,6 +21,18 @@ if(slides[nextSlide] && slides[nextSlide].voice){
 preloadSpeech(nextSlide, slides[nextSlide].voice);
 
 }
+
+/* START SPEAKING */
+
+if(onStart) onStart();
+
+/* PLAY CURRENT SLIDE */
+
+await speakText(text, slideIndex);
+
+/* FINISH */
+
+if(onFinish) onFinish();
 
 }catch(error){
 
@@ -44,7 +44,7 @@ console.error("VoicePlayer error:",error);
 
 playVoice();
 
-}, [text]);
+}, [text, slideIndex]);
 
 return null;
 
