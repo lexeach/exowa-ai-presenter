@@ -10,30 +10,34 @@ const playVoice = async () => {
 
 if (!text) return;
 
-try {
+try{
 
-/* NEXT SLIDE PRELOAD FIRST */
+/* preload next slide */
 
 const nextSlide = slideIndex + 1;
 
-if (slides[nextSlide] && slides[nextSlide].voice) {
+if(slides[nextSlide] && slides[nextSlide].voice){
 preloadSpeech(nextSlide, slides[nextSlide].voice);
 }
 
-/* START SPEAKING */
+/* wait for slide render */
 
-if (onStart) onStart();
+await new Promise(resolve => requestAnimationFrame(resolve));
 
-/* PLAY CURRENT */
+/* start avatar speaking */
+
+if(onStart) onStart();
+
+/* play voice */
 
 await speakText(text, slideIndex);
 
-/* FINISH */
+/* finish */
 
-if (onFinish) onFinish();
+if(onFinish) onFinish();
 
-} catch (e) {
-console.error("VoicePlayer error:", e);
+}catch(e){
+console.error("VoicePlayer error:",e);
 }
 
 };
