@@ -74,10 +74,11 @@ return (
 
 <div
 style={{
-fontFamily: "Arial",
-padding: "20px",
-maxWidth: "1000px",
-margin: "auto"
+fontFamily:"Arial",
+margin:"0",
+padding:"0",
+width:"100%",
+height:"100%"
 }}
 >
 
@@ -91,10 +92,12 @@ EXOWA AI Presenter
 <div
 ref={slideContainerRef}
 style={{
-position:"relative",
+width:"100vw",
+height:"100vh",
 background:"#000",
-padding:"20px",
-borderRadius:"10px"
+display:"flex",
+justifyContent:"center",
+alignItems:"center"
 }}
 >
 

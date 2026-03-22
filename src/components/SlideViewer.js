@@ -6,11 +6,12 @@ return(
 
 <div
 style={{
-width:"100%",
-height:"80vh",
-display:"flex",
-justifyContent:"center",
-alignItems:"center"
+width: "100vw",
+height: "100vh",
+display: "flex",
+justifyContent: "center",
+alignItems: "center",
+background: "#000"
 }}
 >
 
@@ -18,9 +19,9 @@ alignItems:"center"
 src={slide.image}
 alt={slide.title}
 style={{
-width:"100%",
-height:"100%",
-objectFit:"contain"
+maxWidth: "100%",
+maxHeight: "100%",
+objectFit: "contain"
 }}
 />
 
