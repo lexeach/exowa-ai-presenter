@@ -1,12 +1,10 @@
-import React, { useState, useRef } from "react";
-import { unlockAudio } from "./services/sarvamVoiceService";
+import React, { useState, useEffect } from "react";
+import { unlockAudio, preloadSpeech } from "./services/sarvamVoiceService";
 import SlideViewer from "./components/SlideViewer";
 import ChatBox from "./components/ChatBox";
 import VoicePlayer from "./components/VoicePlayer";
 import AvatarPresenter from "./components/AvatarPresenter";
 import { slides } from "./slides/slidesData";
-import { preloadSpeech } from "./services/sarvamVoiceService";
-
 
 function App() {
 
@@ -17,15 +15,12 @@ const [started, setStarted] = useState(false);
 const [qaMode, setQaMode] = useState(false);
 const [qaIntroDone, setQaIntroDone] = useState(false);
 
-const [isFullscreen, setIsFullscreen] = useState(false);
 
-const slideContainerRef = useRef(null);
+/* PRELOAD FIRST 3 SLIDES */
 
 useEffect(() => {
 
 if(started){
-
-/* preload first 3 slides */
 
 preloadSpeech(0, slides[0]?.voice);
 preloadSpeech(1, slides[1]?.voice);
@@ -36,33 +31,13 @@ preloadSpeech(2, slides[2]?.voice);
 }, [started]);
 
 
-
-/* FULLSCREEN TOGGLE */
-
-const toggleFullscreen = () => {
-
-if(!document.fullscreenElement){
-
-slideContainerRef.current.requestFullscreen();
-setIsFullscreen(true);
-
-}else{
-
-document.exitFullscreen();
-setIsFullscreen(false);
-
-}
-
-};
-
-
-/* SLIDE CONTROLS */
+/* NEXT SLIDE */
 
 const nextSlide = () => {
 
 setCurrentSlide(prev => {
 
-if (prev < slides.length - 1) {
+if(prev < slides.length - 1){
 return prev + 1;
 }
 
@@ -72,11 +47,14 @@ return prev;
 
 };
 
+
+/* PREVIOUS SLIDE */
+
 const prevSlide = () => {
 
 setCurrentSlide(prev => {
 
-if (prev > 0) {
+if(prev > 0){
 return prev - 1;
 }
 
@@ -92,31 +70,20 @@ return (
 <div
 style={{
 fontFamily:"Arial",
-margin:"0",
-padding:"0",
-width:"100%",
-height:"100%"
+padding:"20px",
+maxWidth:"900px",
+margin:"auto"
 }}
 >
 
-<h1 style={{ textAlign: "center" }}>
+<h1 style={{textAlign:"center"}}>
 EXOWA AI Presenter
 </h1>
 
 
-{/* PRESENTATION AREA */}
+{/* Avatar */}
 
-<div
-ref={slideContainerRef}
-style={{
-width:"100vw",
-height:"100vh",
-background:"#000",
-display:"flex",
-justifyContent:"center",
-alignItems:"center"
-}}
->
+<AvatarPresenter speaking={speaking} />
 
 
 {/* Slide */}
@@ -124,34 +91,16 @@ alignItems:"center"
 <SlideViewer slide={slides[currentSlide]} />
 
 
-{/* Avatar (TED style corner) */}
-
-<div
-style={{
-position:"absolute",
-bottom:"20px",
-right:"20px",
-width:"180px"
-}}
->
-
-<AvatarPresenter speaking={speaking} />
-
-</div>
-
-
-</div>
-
-
-{/* SLIDE NARRATION */}
+{/* Slide Voice */}
 
 {started && !qaMode && (
 
 <VoicePlayer
-key={"slide-" + currentSlide}
+key={"slide-"+currentSlide}
 text={slides[currentSlide]?.voice}
-onStart={() => setSpeaking(true)}
-onFinish={() => {
+slideIndex={currentSlide}
+onStart={()=>setSpeaking(true)}
+onFinish={()=>{
 
 setSpeaking(false);
 
@@ -164,6 +113,8 @@ setQaMode(true);
 return;
 
 }
+
+/* NEXT SLIDE */
 
 setCurrentSlide(prev => {
 
@@ -181,13 +132,14 @@ return prev;
 )}
 
 
-{/* Q&A INTRO */}
+{/* Q&A Intro */}
 
 {qaMode && !qaIntroDone && (
 
 <VoicePlayer
 key="qa-intro"
 text="अगर आपका कोई सवाल है तो आप पूछ सकते हैं।"
+slideIndex={999}
 onStart={()=>setSpeaking(true)}
 onFinish={()=>{
 
@@ -200,14 +152,14 @@ setQaIntroDone(true);
 )}
 
 
-{/* CONTROLS */}
+{/* Controls */}
 
 <div
 style={{
-marginTop: "20px",
-display: "flex",
-justifyContent: "center",
-gap: "10px"
+marginTop:"20px",
+display:"flex",
+justifyContent:"center",
+gap:"10px"
 }}
 >
 
@@ -219,15 +171,15 @@ Previous
 Next
 </button>
 
-<button onClick={toggleFullscreen}>
-{isFullscreen ? "Exit Full Screen" : "Full Screen"}
-</button>
 
 {!started && (
+
 <button
 onClick={()=>{
+
 unlockAudio();
 setStarted(true);
+
 }}
 style={{
 background:"#2F80ED",
@@ -237,17 +189,22 @@ padding:"10px 16px",
 borderRadius:"6px"
 }}
 >
+
 Start Presentation
+
 </button>
+
 )}
 
 </div>
 
 
-{/* Q&A CHAT */}
+{/* ChatBox */}
 
 {qaMode && qaIntroDone && (
+
 <ChatBox setSpeaking={setSpeaking} autoStart={true} />
+
 )}
 
 </div>
