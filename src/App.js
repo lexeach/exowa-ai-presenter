@@ -34,27 +34,6 @@ preloadSpeech(1, slides[1]?.voice);
 
 /* FULLSCREEN FUNCTION */
 
-const toggleFullscreen = () => {
-
-if(!document.fullscreenElement){
-
-containerRef.current.requestFullscreen();
-
-}else{
-
-document.exitFullscreen();
-
-}
-
-{!document.fullscreenElement && (
-<div style={{marginTop:"20px"}}>
-<button onClick={prevSlide}>Previous</button>
-<button onClick={nextSlide}>Next</button>
-<button onClick={toggleFullscreen}>Fullscreen</button>
-</div>
-)}
-
-};
 
 const [isMobileFull, setIsMobileFull] = useState(false);
 
