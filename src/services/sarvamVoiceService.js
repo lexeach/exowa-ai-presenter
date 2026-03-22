@@ -3,6 +3,7 @@ let currentAudio = null;
 /* AUDIO CACHE */
 
 const audioCache = {};
+const loadingCache = {};
 
 
 /* Unlock browser audio */
@@ -30,9 +31,15 @@ console.warn("Audio unlock failed",e);
 
 /* PRELOAD SPEECH */
 
-export async function preloadSpeech(slideIndex,text){
+export async function preloadSpeech(slideIndex, text){
 
 if(audioCache[slideIndex]) return audioCache[slideIndex];
+
+/* prevent duplicate requests */
+
+if(loadingCache[slideIndex]) return loadingCache[slideIndex];
+
+loadingCache[slideIndex] = (async ()=>{
 
 try{
 
@@ -43,7 +50,7 @@ method:"POST",
 headers:{
 "Content-Type":"application/json"
 },
-body: JSON.stringify({text})
+body: JSON.stringify({ text })
 });
 
 const data = await response.json();
@@ -54,7 +61,6 @@ return null;
 }
 
 const audioBase64 = data.audios[0];
-
 const audioSrc = `data:audio/wav;base64,${audioBase64}`;
 
 const audio = new Audio(audioSrc);
@@ -65,14 +71,23 @@ audio.playbackRate = 0.9;
 
 audioCache[slideIndex] = audio;
 
+delete loadingCache[slideIndex];
+
 return audio;
 
 }catch(error){
 
 console.error("Preload error:",error);
+
+delete loadingCache[slideIndex];
+
 return null;
 
 }
+
+})();
+
+return loadingCache[slideIndex];
 
 }
 
