@@ -15,10 +15,12 @@ const [started, setStarted] = useState(false);
 const [qaMode, setQaMode] = useState(false);
 const [qaIntroDone, setQaIntroDone] = useState(false);
 
+const [isMobileFull, setIsMobileFull] = useState(false);
+
 const containerRef = useRef(null);
 
 
-/* preload first 2 slides */
+{/* PRELOAD FIRST 2 SLIDES */}
 
 useEffect(()=>{
 
@@ -32,33 +34,36 @@ preloadSpeech(1, slides[1]?.voice);
 },[started]);
 
 
-/* FULLSCREEN FUNCTION */
-
-
-const [isMobileFull, setIsMobileFull] = useState(false);
+{/* FULLSCREEN TOGGLE */}
 
 const toggleFullscreen = () => {
 
 if(window.innerWidth < 768){
 
-/* mobile fullscreen */
+/* MOBILE FULLSCREEN */
 
 setIsMobileFull(!isMobileFull);
 
 }else{
 
-/* desktop fullscreen */
+/* DESKTOP FULLSCREEN */
 
 if(!document.fullscreenElement){
+
 containerRef.current.requestFullscreen();
+
 }else{
+
 document.exitFullscreen();
+
 }
 
 }
 
 };
-/* NEXT SLIDE */
+
+
+{/* NEXT SLIDE */}
 
 const nextSlide = () => {
 
@@ -75,7 +80,7 @@ return prev;
 };
 
 
-/* PREVIOUS SLIDE */
+{/* PREVIOUS SLIDE */}
 
 const prevSlide = () => {
 
@@ -112,22 +117,17 @@ justifyContent:"center"
 }}
 >
 
-<h1 style={{textAlign:"center"}}>
-EXOWA AI Presenter
-</h1>
-
-
-{/* Avatar */}
+{/* AVATAR */}
 
 <AvatarPresenter speaking={speaking} />
 
 
-{/* Slide */}
+{/* SLIDE */}
 
 <SlideViewer slide={slides[currentSlide]} />
 
 
-{/* Slide narration */}
+{/* VOICE PLAYER */}
 
 {started && !qaMode && (
 
@@ -140,7 +140,7 @@ onFinish={()=>{
 
 setSpeaking(false);
 
-/* slide 20 → start Q&A */
+/* START Q&A AFTER SLIDE 20 */
 
 if(currentSlide === 19){
 
@@ -149,7 +149,7 @@ return;
 
 }
 
-/* next slide */
+/* NEXT SLIDE */
 
 setCurrentSlide(prev => {
 
@@ -167,7 +167,7 @@ return prev;
 )}
 
 
-{/* Q&A intro voice */}
+{/* Q&A INTRO VOICE */}
 
 {qaMode && !qaIntroDone && (
 
@@ -187,15 +187,15 @@ setQaIntroDone(true);
 )}
 
 
-{/* CONTROLS */}
+{/* CONTROLS (HIDE IN FULLSCREEN) */}
+
+{!isMobileFull && !document.fullscreenElement && (
 
 <div
 style={{
 marginTop:"20px",
 display:"flex",
-justifyContent:"center",
-gap:"10px",
-flexWrap:"wrap"
+gap:"10px"
 }}
 >
 
@@ -207,11 +207,9 @@ Previous
 Next
 </button>
 
-
 <button onClick={toggleFullscreen}>
 Fullscreen
 </button>
-
 
 {!started && (
 
@@ -239,8 +237,10 @@ Start Presentation
 
 </div>
 
+)}
 
-{/* Q&A */}
+
+{/* Q&A CHAT */}
 
 {qaMode && qaIntroDone && (
 
