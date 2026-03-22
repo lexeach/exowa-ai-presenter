@@ -20,42 +20,53 @@ const [isMobileFull, setIsMobileFull] = useState(false);
 const containerRef = useRef(null);
 
 
-{/* PRELOAD FIRST 2 SLIDES */}
+/* FIX MOBILE VIEWPORT HEIGHT */
 
-useEffect(()=>{
+useEffect(() => {
 
-if(started){
+const setMobileHeight = () => {
+const vh = window.innerHeight * 0.01;
+document.documentElement.style.setProperty("--vh", `${vh}px`);
+};
 
+setMobileHeight();
+window.addEventListener("resize", setMobileHeight);
+
+return () => window.removeEventListener("resize", setMobileHeight);
+
+}, []);
+
+
+/* PRELOAD FIRST 2 SLIDES */
+
+useEffect(() => {
+
+if (started) {
 preloadSpeech(0, slides[0]?.voice);
 preloadSpeech(1, slides[1]?.voice);
-
 }
 
-},[started]);
+}, [started]);
 
 
-{/* FULLSCREEN TOGGLE */}
+/* FULLSCREEN TOGGLE */
 
 const toggleFullscreen = () => {
 
-if(window.innerWidth < 768){
+if (window.innerWidth < 768) {
 
 /* MOBILE FULLSCREEN */
 
 setIsMobileFull(!isMobileFull);
 
-}else{
+} else {
 
 /* DESKTOP FULLSCREEN */
 
-if(!document.fullscreenElement){
-
+if (!document.fullscreenElement) {
 containerRef.current.requestFullscreen();
-
-}else{
-
+} else {
 document.exitFullscreen();
-
 }
 
 }
@@ -63,13 +74,13 @@ document.exitFullscreen();
 };
 
 
-{/* NEXT SLIDE */}
+/* NEXT SLIDE */
 
 const nextSlide = () => {
 
 setCurrentSlide(prev => {
 
-if(prev < slides.length - 1){
+if (prev < slides.length - 1) {
 return prev + 1;
 }
 
@@ -80,13 +91,13 @@ return prev;
 };
 
 
-{/* PREVIOUS SLIDE */}
+/* PREVIOUS SLIDE */
 
 const prevSlide = () => {
 
 setCurrentSlide(prev => {
 
-if(prev > 0){
+if (prev > 0) {
 return prev - 1;
 }
 
@@ -102,18 +113,18 @@ return (
 <div
 ref={containerRef}
 style={{
-fontFamily:"Arial",
+fontFamily: "Arial",
 width: isMobileFull ? "100vw" : "100%",
-height: isMobileFull ? "100vh" : "auto",
+height: isMobileFull ? "calc(var(--vh, 1vh) * 100)" : "auto",
 position: isMobileFull ? "fixed" : "relative",
-top:0,
-left:0,
-background:"#000",
+top: 0,
+left: 0,
+background: "#000",
 zIndex: isMobileFull ? 9999 : "auto",
-display:"flex",
-flexDirection:"column",
-alignItems:"center",
-justifyContent:"center"
+display: "flex",
+flexDirection: "column",
+alignItems: "center",
+justifyContent: "center"
 }}
 >
 
@@ -132,28 +143,26 @@ justifyContent:"center"
 {started && !qaMode && (
 
 <VoicePlayer
-key={"slide-"+currentSlide}
+key={"slide-" + currentSlide}
 text={slides[currentSlide]?.voice}
 slideIndex={currentSlide}
-onStart={()=>setSpeaking(true)}
-onFinish={()=>{
+onStart={() => setSpeaking(true)}
+onFinish={() => {
 
 setSpeaking(false);
 
 /* START Q&A AFTER SLIDE 20 */
 
-if(currentSlide === 19){
-
+if (currentSlide === 19) {
 setQaMode(true);
 return;
-
 }
 
 /* NEXT SLIDE */
 
 setCurrentSlide(prev => {
 
-if(prev < slides.length - 1){
+if (prev < slides.length - 1) {
 return prev + 1;
 }
 
@@ -175,8 +184,8 @@ return prev;
 key="qa-intro"
 text="अगर आपका कोई सवाल है तो आप पूछ सकते हैं।"
 slideIndex={999}
-onStart={()=>setSpeaking(true)}
-onFinish={()=>{
+onStart={() => setSpeaking(true)}
+onFinish={() => {
 
 setSpeaking(false);
 setQaIntroDone(true);
@@ -187,15 +196,15 @@ setQaIntroDone(true);
 )}
 
 
-{/* CONTROLS (HIDE IN FULLSCREEN) */}
+{/* CONTROLS */}
 
 {!isMobileFull && !document.fullscreenElement && (
 
 <div
 style={{
-marginTop:"20px",
-display:"flex",
-gap:"10px"
+marginTop: "20px",
+display: "flex",
+gap: "10px"
 }}
 >
 
@@ -214,18 +223,18 @@ Fullscreen
 {!started && (
 
 <button
-onClick={()=>{
+onClick={() => {
 
 unlockAudio();
 setStarted(true);
 
 }}
 style={{
-background:"#2F80ED",
-color:"#fff",
-border:"none",
-padding:"10px 16px",
-borderRadius:"6px"
+background: "#2F80ED",
+color: "#fff",
+border: "none",
+padding: "10px 16px",
+borderRadius: "6px"
 }}
 >
 
