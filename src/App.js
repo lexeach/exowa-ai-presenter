@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { unlockAudio } from "./services/sarvamVoiceService";
 import SlideViewer from "./components/SlideViewer";
 import ChatBox from "./components/ChatBox";
@@ -14,6 +14,28 @@ const [started, setStarted] = useState(false);
 
 const [qaMode, setQaMode] = useState(false);
 const [qaIntroDone, setQaIntroDone] = useState(false);
+
+/* Fullscreen ref */
+
+const slideContainerRef = useRef(null);
+
+
+/* Fullscreen toggle */
+
+const toggleFullscreen = () => {
+
+if(!document.fullscreenElement){
+
+slideContainerRef.current.requestFullscreen();
+
+}else{
+
+document.exitFullscreen();
+
+}
+
+};
+
 
 const nextSlide = () => {
 
@@ -61,10 +83,17 @@ EXOWA AI Presenter
 {/* Avatar */}
 <AvatarPresenter speaking={speaking} />
 
-{/* Slide */}
+{/* Slide container with fullscreen */}
+
+<div ref={slideContainerRef}>
+
 <SlideViewer slide={slides[currentSlide]} />
 
+</div>
+
+
 {/* Slide narration */}
+
 {started && !qaMode && (
 
 <VoicePlayer
@@ -102,7 +131,9 @@ return prev;
 
 )}
 
+
 {/* Q&A Intro Voice */}
+
 {qaMode && !qaIntroDone && (
 
 <VoicePlayer
@@ -119,7 +150,9 @@ setQaIntroDone(true);
 
 )}
 
+
 {/* Controls */}
+
 <div
 style={{
 marginTop: "20px",
@@ -135,6 +168,10 @@ Previous
 
 <button onClick={nextSlide}>
 Next
+</button>
+
+<button onClick={toggleFullscreen}>
+Full Screen
 </button>
 
 {!started && (
@@ -157,7 +194,9 @@ Start Presentation
 
 </div>
 
+
 {/* ChatBox */}
+
 {qaMode && qaIntroDone && (
 <ChatBox setSpeaking={setSpeaking} autoStart={true} />
 )}
