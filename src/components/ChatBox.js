@@ -132,7 +132,7 @@ setTimeout(()=>{
 
 startRecognition();
 
-},1800);
+},700);
 
 }
 
@@ -149,7 +149,7 @@ setTimeout(()=>{
 
 startRecognition();
 
-},1200);
+},500);
 
 }
 
