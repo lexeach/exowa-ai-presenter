@@ -10,34 +10,30 @@ const playVoice = async () => {
 
 if (!text) return;
 
-try{
+try {
 
-/* 🔹 preload ONLY next slide */
+/* NEXT SLIDE PRELOAD FIRST */
 
-const next = slideIndex + 1;
+const nextSlide = slideIndex + 1;
 
-if(slides[next] && slides[next].voice){
-
-await preloadSpeech(next, slides[next].voice);
-
+if (slides[nextSlide] && slides[nextSlide].voice) {
+preloadSpeech(nextSlide, slides[nextSlide].voice);
 }
 
-/* start avatar speaking */
+/* START SPEAKING */
 
-if(onStart) onStart();
+if (onStart) onStart();
 
-/* play voice */
+/* PLAY CURRENT */
 
 await speakText(text, slideIndex);
 
-/* finish callback */
+/* FINISH */
 
-if(onFinish) onFinish();
+if (onFinish) onFinish();
 
-}catch(e){
-
-console.error("VoicePlayer error:",e);
-
+} catch (e) {
+console.error("VoicePlayer error:", e);
 }
 
 };
@@ -47,7 +43,6 @@ playVoice();
 }, [slideIndex]);
 
 return null;
-
 }
 
 export default VoicePlayer;
