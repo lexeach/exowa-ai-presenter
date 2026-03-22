@@ -1,65 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 function AvatarPresenter({ speaking }) {
 
-const [mouth,setMouth] = useState(false);
+return (
 
-useEffect(()=>{
+<div
+style={{
+position:"fixed",
+right:"20px",
+bottom:"20px",
+zIndex:9999,
+transition:"all 0.3s ease"
+}}
+>
 
-let interval;
-
-if(speaking){
-
-interval = setInterval(()=>{
-setMouth(prev => !prev);
-},120);
-
-}
-
-return ()=>clearInterval(interval);
-
-},[speaking]);
-
-return(
-
-<div style={{
+<div
+style={{
+width:"80px",
+height:"80px",
+borderRadius:"50%",
+background:"#f2d1b3",
 display:"flex",
-flexDirection:"column",
 alignItems:"center",
-marginBottom:"20px"
-}}>
-
-<svg width="180" height="200" viewBox="0 0 200 220">
-
-{/* Face */}
-<circle cx="100" cy="100" r="70" fill="#FFD7B5" />
-
-{/* Eyes */}
-<circle cx="70" cy="80" r="8" fill="#000"/>
-<circle cx="130" cy="80" r="8" fill="#000"/>
-
-{/* Smile lines */}
-<path d="M70 120 Q100 140 130 120" stroke="#000" strokeWidth="3" fill="none"/>
-
-{/* Mouth animation */}
-{mouth ? (
-
-<ellipse cx="100" cy="120" rx="18" ry="10" fill="#000"/>
-
-) : (
-
-<ellipse cx="100" cy="120" rx="18" ry="4" fill="#000"/>
-
-)}
-
-{/* Body */}
-<rect x="55" y="160" width="90" height="50" fill="#2F80ED" rx="10"/>
-
-</svg>
-
-<p style={{fontWeight:"bold",marginTop:"10px"}}>
-AI Presenter
-</p>
+justifyContent:"center",
+fontSize:"40px",
+boxShadow:"0 4px 10px rgba(0,0,0,0.3)",
+transform: speaking ? "scale(1.1)" : "scale(1)"
+}}
+>
+🙂
+</div>
 
 </div>
 
