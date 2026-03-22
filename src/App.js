@@ -159,9 +159,7 @@ Start Presentation
 
 {/* ChatBox */}
 {qaMode && qaIntroDone && (
-{qaMode && (
 <ChatBox setSpeaking={setSpeaking} autoStart={true} />
-)}
 )}
 
 </div>
