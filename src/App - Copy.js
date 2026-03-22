@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { unlockAudio, preloadSpeech } from "./services/sarvamVoiceService";
 import SlideViewer from "./components/SlideViewer";
 import ChatBox from "./components/ChatBox";
@@ -15,12 +15,10 @@ const [started, setStarted] = useState(false);
 const [qaMode, setQaMode] = useState(false);
 const [qaIntroDone, setQaIntroDone] = useState(false);
 
-const containerRef = useRef(null);
 
+/* PRELOAD FIRST 3 SLIDES */
 
-/* preload first 2 slides */
-
-useEffect(()=>{
+useEffect(() => {
 
 if(started){
 
@@ -29,24 +27,7 @@ preloadSpeech(1, slides[1]?.voice);
 
 }
 
-},[started]);
-
-
-/* FULLSCREEN FUNCTION */
-
-const toggleFullscreen = () => {
-
-if(!document.fullscreenElement){
-
-containerRef.current.requestFullscreen();
-
-}else{
-
-document.exitFullscreen();
-
-}
-
-};
+}, [started]);
 
 
 /* NEXT SLIDE */
@@ -86,11 +67,10 @@ return prev;
 return (
 
 <div
-ref={containerRef}
 style={{
 fontFamily:"Arial",
 padding:"20px",
-maxWidth:"1000px",
+maxWidth:"900px",
 margin:"auto"
 }}
 >
@@ -110,7 +90,7 @@ EXOWA AI Presenter
 <SlideViewer slide={slides[currentSlide]} />
 
 
-{/* Slide narration */}
+{/* Slide Voice */}
 
 {started && !qaMode && (
 
@@ -123,16 +103,17 @@ onFinish={()=>{
 
 setSpeaking(false);
 
-/* slide 20 → start Q&A */
+/* Slide 20 finished */
 
 if(currentSlide === 19){
 
 setQaMode(true);
+
 return;
 
 }
 
-/* next slide */
+/* NEXT SLIDE */
 
 setCurrentSlide(prev => {
 
@@ -150,7 +131,7 @@ return prev;
 )}
 
 
-/* Q&A intro voice */
+{/* Q&A Intro */}
 
 {qaMode && !qaIntroDone && (
 
@@ -170,15 +151,14 @@ setQaIntroDone(true);
 )}
 
 
-/* CONTROLS */
+{/* Controls */}
 
 <div
 style={{
 marginTop:"20px",
 display:"flex",
 justifyContent:"center",
-gap:"10px",
-flexWrap:"wrap"
+gap:"10px"
 }}
 >
 
@@ -188,11 +168,6 @@ Previous
 
 <button onClick={nextSlide}>
 Next
-</button>
-
-
-<button onClick={toggleFullscreen}>
-Fullscreen
 </button>
 
 
@@ -223,7 +198,7 @@ Start Presentation
 </div>
 
 
-{/* Q&A */}
+{/* ChatBox */}
 
 {qaMode && qaIntroDone && (
 
