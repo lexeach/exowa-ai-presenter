@@ -89,9 +89,12 @@ return (
 ref={containerRef}
 style={{
 fontFamily:"Arial",
-padding:"20px",
-maxWidth:"1000px",
-margin:"auto"
+padding: document.fullscreenElement ? "0px" : "20px",
+width:"100%",
+height: document.fullscreenElement ? "100vh" : "auto",
+maxWidth: document.fullscreenElement ? "100%" : "1000px",
+margin:"0 auto",
+background:"#000"
 }}
 >
 

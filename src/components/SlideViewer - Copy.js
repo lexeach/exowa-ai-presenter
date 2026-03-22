@@ -20,7 +20,7 @@ src={slide.image}
 alt={slide.title}
 style={{
 maxWidth: "100%",
-maxHeight: "auto",
+maxHeight: "100%",
 objectFit: "contain"
 }}
 />
