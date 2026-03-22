@@ -1,8 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { askAI } from "../services/openaiService";
 import { speakText } from "../services/sarvamVoiceService";
 
-function ChatBox({ setSpeaking }) {
+function ChatBox({ setSpeaking, autoStart }) {
 
 const [conversation, setConversation] = useState(false);
 const [listening, setListening] = useState(false);
@@ -11,6 +11,21 @@ const recognitionRef = useRef(null);
 const historyRef = useRef([]);
 const conversationRef = useRef(false);
 const aiSpeakingRef = useRef(false);
+
+
+/* AUTO START CONVERSATION */
+
+useEffect(()=>{
+
+if(autoStart){
+
+setTimeout(()=>{
+startConversation();
+},500);
+
+}
+
+},[autoStart]);
 
 
 /* START SPEECH RECOGNITION */
@@ -51,15 +66,10 @@ content: question
 
 try {
 
-/* COMPLETELY STOP MIC BEFORE AI SPEAKS */
+/* STOP MIC BEFORE AI SPEAKS */
 
 if(recognitionRef.current){
-try{
-recognitionRef.current.onresult = null;
-recognitionRef.current.onerror = null;
-recognitionRef.current.onend = null;
 recognitionRef.current.stop();
-}catch(e){}
 }
 
 /* GET AI ANSWER */
@@ -73,18 +83,15 @@ role: "assistant",
 content: answer
 });
 
-
 /* AI SPEAKING LOCK */
 
 aiSpeakingRef.current = true;
 
 setSpeaking(true);
 
-
-/* SMALL SPEECH DELAY (PREVENT WORD CUT) */
+/* SMALL DELAY */
 
 await new Promise(resolve => setTimeout(resolve,200));
-
 
 /* PLAY VOICE */
 
@@ -101,7 +108,7 @@ console.error("AI error:", error);
 }
 
 
-/* RESTART MIC AFTER AI VOICE */
+/* RESTART MIC */
 
 if (conversationRef.current) {
 
@@ -109,14 +116,14 @@ setTimeout(() => {
 
 startRecognition();
 
-}, 1500);
+}, 1200);
 
 }
 
 };
 
 
-/* MIC TIMEOUT HANDLER */
+/* MIC TIMEOUT */
 
 recognition.onend = () => {
 
@@ -170,9 +177,7 @@ setConversation(false);
 
 if (recognitionRef.current) {
 
-try {
 recognitionRef.current.stop();
-} catch(e){}
 
 }
 
