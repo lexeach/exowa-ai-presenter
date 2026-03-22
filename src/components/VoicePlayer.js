@@ -22,7 +22,7 @@ preloadSpeech(next, slides[next].voice);
 
 /* wait for slide to render */
 
-await new Promise(resolve => setTimeout(resolve, 250));
+await new Promise(resolve => setTimeout(resolve, 300));
 
 /* avatar start */
 
