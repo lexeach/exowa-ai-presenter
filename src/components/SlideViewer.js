@@ -1,27 +1,29 @@
 import React from "react";
 
-function SlideViewer({ slide }){
+function SlideViewer({ slide }) {
 
-return(
+return (
 
 <div
 style={{
-width: "100vw",
-height: "100vh",
-display: "flex",
-justifyContent: "center",
-alignItems: "center",
-background: "#000"
+display:"flex",
+justifyContent:"center",
+alignItems:"center",
+width:"100%",
+height:"80vh",
+overflow:"hidden"
 }}
 >
 
 <img
 src={slide.image}
-alt={slide.title}
+alt="slide"
 style={{
-maxWidth: "100%",
-maxHeight: "auto",
-objectFit: "contain"
+maxWidth:"100%",
+maxHeight:"100%",
+objectFit:"contain",
+display:"block",
+margin:"0 auto"
 }}
 />
 
