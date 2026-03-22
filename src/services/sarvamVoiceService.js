@@ -28,11 +28,11 @@ console.warn("Audio unlock failed",e);
 
 
 
-/* PRELOAD NEXT SLIDE AUDIO */
+/* PRELOAD SPEECH */
 
 export async function preloadSpeech(slideIndex,text){
 
-if(audioCache[slideIndex]) return;
+if(audioCache[slideIndex]) return audioCache[slideIndex];
 
 try{
 
@@ -50,7 +50,7 @@ const data = await response.json();
 
 if(!data.audios || data.audios.length===0){
 console.error("No preload audio returned");
-return;
+return null;
 }
 
 const audioBase64 = data.audios[0];
@@ -59,15 +59,18 @@ const audioSrc = `data:audio/wav;base64,${audioBase64}`;
 
 const audio = new Audio(audioSrc);
 
-audio.preload="auto";
-audio.volume=1;
-audio.playbackRate=0.9;
+audio.preload = "auto";
+audio.volume = 1;
+audio.playbackRate = 0.9;
 
 audioCache[slideIndex] = audio;
+
+return audio;
 
 }catch(error){
 
 console.error("Preload error:",error);
+return null;
 
 }
 
@@ -75,70 +78,55 @@ console.error("Preload error:",error);
 
 
 
-/* TEXT TO SPEECH */
+/* SPEAK TEXT */
 
 export async function speakText(text,slideIndex=null){
 
 try{
 
-console.log("TTS request:",text);
-
 let audio;
 
 
-/* USE CACHE IF AVAILABLE */
+/* USE CACHE */
 
-if(slideIndex !== null && audioCache[slideIndex]){
-
-console.log("Using cached audio for slide",slideIndex);
+if(slideIndex !== null){
 
 audio = audioCache[slideIndex];
 
+/* IF NOT READY → WAIT PRELOAD */
+
+if(!audio){
+
+console.log("Audio not cached, waiting preload...");
+
+audio = await preloadSpeech(slideIndex,text);
+
+}
+
 }else{
 
-const response = await fetch("/.netlify/functions/sarvamTTS",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body: JSON.stringify({text})
-});
-
-const data = await response.json();
-
-console.log("TTS response:",data);
-
-if(!data.audios || data.audios.length===0){
-console.error("No audio returned");
-return;
-}
-
-const audioBase64 = data.audios[0];
-
-const audioSrc = `data:audio/wav;base64,${audioBase64}`;
-
-audio = new Audio(audioSrc);
-
-audio.preload="auto";
-audio.volume=1;
-audio.playbackRate=0.9;
+audio = await preloadSpeech(Date.now(),text);
 
 }
+
+if(!audio) return;
 
 
 /* STOP PREVIOUS AUDIO */
 
 if(currentAudio){
+
 currentAudio.pause();
-currentAudio=null;
+currentAudio = null;
+
 }
 
 currentAudio = audio;
 
 
-/* WAIT BUFFER */
+/* RESET PLAY POSITION */
 
-audio.load();
+audio.currentTime = 0;
 
 
 /* PLAY */
@@ -146,10 +134,10 @@ audio.load();
 await audio.play();
 
 
-/* WAIT FINISH */
+/* WAIT END */
 
 return new Promise(resolve=>{
-audio.onended=resolve;
+audio.onended = resolve;
 });
 
 }catch(error){

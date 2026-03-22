@@ -12,31 +12,33 @@ if (!text) return;
 
 try{
 
-/* PRELOAD NEXT SLIDE FIRST */
+/* 🔥 FORCE PRELOAD CURRENT IF NOT READY */
 
-const nextSlide = slideIndex + 1;
+await preloadSpeech(slideIndex, text);
 
-if(slides[nextSlide] && slides[nextSlide].voice){
-
-preloadSpeech(nextSlide, slides[nextSlide].voice);
-
-}
-
-/* START SPEAKING */
+/* START */
 
 if(onStart) onStart();
 
-/* PLAY CURRENT SLIDE */
+/* PLAY FROM CACHE ONLY */
 
 await speakText(text, slideIndex);
+
+/* NEXT SLIDE PRELOAD */
+
+const next = slideIndex + 1;
+
+if(slides[next]){
+preloadSpeech(next, slides[next].voice);
+}
 
 /* FINISH */
 
 if(onFinish) onFinish();
 
-}catch(error){
+}catch(e){
 
-console.error("VoicePlayer error:",error);
+console.error(e);
 
 }
 
