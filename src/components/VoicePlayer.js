@@ -4,33 +4,47 @@ import { slides } from "../slides/slidesData";
 
 function VoicePlayer({ text, slideIndex, onStart, onFinish }) {
 
-useEffect(()=>{
+useEffect(() => {
 
-const play = async()=>{
+const playVoice = async () => {
 
-if(!text) return;
+if (!text) return;
+
+try{
+
+/* START AVATAR SPEAKING */
 
 if(onStart) onStart();
 
+/* PLAY CURRENT SLIDE VOICE */
+
 await speakText(text, slideIndex);
+
+/* FINISH CALLBACK */
 
 if(onFinish) onFinish();
 
-/* PRELOAD NEXT SLIDE */
+/* PRELOAD NEXT SLIDE VOICE */
 
-const next = slideIndex + 1;
+const nextSlide = slideIndex + 1;
 
-if(slides[next]){
+if(slides[nextSlide] && slides[nextSlide].voice){
 
-preloadSpeech(next, slides[next].voice);
+preloadSpeech(nextSlide, slides[nextSlide].voice);
+
+}
+
+}catch(error){
+
+console.error("VoicePlayer error:",error);
 
 }
 
 };
 
-play();
+playVoice();
 
-},[text]);
+}, [text]);
 
 return null;
 
