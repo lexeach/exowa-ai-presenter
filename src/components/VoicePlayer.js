@@ -1,25 +1,36 @@
 import { useEffect } from "react";
-import { speakText } from "../services/sarvamVoiceService";
+import { speakText, preloadSpeech } from "../services/sarvamVoiceService";
+import { slides } from "../slides/slidesData";
 
-function VoicePlayer({ text, onStart, onFinish }) {
+function VoicePlayer({ text, slideIndex, onStart, onFinish }) {
 
-useEffect(() => {
+useEffect(()=>{
 
-const speak = async () => {
+const play = async()=>{
 
-if (!text) return;
+if(!text) return;
 
-if (onStart) onStart();
+if(onStart) onStart();
 
-await speakText(text);
+await speakText(text, slideIndex);
 
-if (onFinish) onFinish();
+if(onFinish) onFinish();
+
+/* PRELOAD NEXT SLIDE */
+
+const next = slideIndex + 1;
+
+if(slides[next]){
+
+preloadSpeech(next, slides[next].voice);
+
+}
 
 };
 
-speak();
+play();
 
-}, [text]);
+},[text]);
 
 return null;
 
