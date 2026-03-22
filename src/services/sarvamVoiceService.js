@@ -66,7 +66,7 @@ const audio = new Audio(audioSrc);
 
 audio.preload="auto";
 audio.volume=1;
-audio.playbackRate = 8.5;
+audio.playbackRate = 0.85;
 
 currentAudio=audio;
 
