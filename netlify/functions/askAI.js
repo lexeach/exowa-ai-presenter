@@ -1,5 +1,21 @@
 const { exowaKnowledge } = require("../../src/data/exowaKnowledgeBase");
 
+/* Human-like fillers */
+
+const fillers = [
+"जी बिल्कुल।",
+"बहुत अच्छा सवाल है।",
+"देखिए।",
+"अच्छा, समझाता हूँ।",
+"हाँ, जरूर।",
+"जी हाँ।",
+"अच्छा सवाल है।"
+];
+
+function getFiller(){
+return fillers[Math.floor(Math.random() * fillers.length)];
+}
+
 exports.handler = async function(event){
 
 try{
@@ -102,7 +118,7 @@ q.includes("bilkul")
 ){
 
 reply =
-"ज़रूर। Exowa में student unlimited mock tests दे सकता है और हर test के बाद instant feedback मिलता है जिससे उसकी preparation लगातार improve होती रहती है।";
+"Exowa में student unlimited mock tests दे सकता है और हर test के बाद instant feedback मिलता है जिससे उसकी preparation लगातार improve होती रहती है।";
 
 }
 
@@ -115,6 +131,12 @@ reply =
 "Exowa एक AI based mock test platform है जो class 6 से 12 तक के students को unlimited practice provide करता है। क्या आप इसके features, subjects या pricing के बारे में जानना चाहेंगे?";
 
 }
+
+
+/* Add human filler */
+
+reply = getFiller() + " " + reply;
+
 
 return{
 statusCode:200,

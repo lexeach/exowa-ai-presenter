@@ -1,29 +1,47 @@
 let currentAudio = null;
 
+export function unlockAudio(){
+
+try{
+
+const audio = new Audio();
+
+audio.src =
+"data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=";
+
+audio.play().catch(()=>{});
+
+}catch(e){}
+
+}
+
+
+
 export async function speakText(text){
 
 try{
 
-console.log("TTS request:", text);
+console.log("TTS request:",text);
 
 const response = await fetch("/.netlify/functions/sarvamTTS",{
 method:"POST",
 headers:{
 "Content-Type":"application/json"
 },
-body: JSON.stringify({ text })
+body: JSON.stringify({text})
 });
 
 const data = await response.json();
 
-console.log("TTS response:", data);
+console.log("TTS response:",data);
 
-if(!data.audios || data.audios.length === 0){
+if(!data.audios || data.audios.length===0){
 console.error("No audio returned");
 return;
 }
 
 const audioBase64 = data.audios[0];
+
 const audioSrc = `data:audio/wav;base64,${audioBase64}`;
 
 
@@ -31,7 +49,7 @@ const audioSrc = `data:audio/wav;base64,${audioBase64}`;
 
 if(currentAudio){
 currentAudio.pause();
-currentAudio = null;
+currentAudio=null;
 }
 
 
@@ -39,23 +57,23 @@ currentAudio = null;
 
 const audio = new Audio(audioSrc);
 
-audio.preload = "auto";
-audio.volume = 1;
+audio.preload="auto";
+audio.volume=1;
 
 currentAudio = audio;
 
 
-/* wait for buffer */
+/* wait for audio buffer */
 
 await new Promise(resolve=>{
-audio.oncanplaythrough = resolve;
+audio.onloadeddata = resolve;
 });
 
 
 /* important delay */
 
 await new Promise(resolve=>{
-setTimeout(resolve,300);
+setTimeout(resolve,250);
 });
 
 
@@ -72,7 +90,7 @@ audio.onended = resolve;
 
 }catch(error){
 
-console.error("Voice error:", error);
+console.error("Voice error:",error);
 
 }
 
