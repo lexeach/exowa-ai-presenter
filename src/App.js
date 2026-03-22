@@ -24,7 +24,6 @@ if(started){
 
 preloadSpeech(0, slides[0]?.voice);
 preloadSpeech(1, slides[1]?.voice);
-preloadSpeech(2, slides[2]?.voice);
 
 }
 

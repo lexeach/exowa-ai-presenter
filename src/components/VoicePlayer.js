@@ -12,33 +12,31 @@ if (!text) return;
 
 try{
 
-/* 🔥 FORCE PRELOAD CURRENT IF NOT READY */
-
-await preloadSpeech(slideIndex, text);
-
-/* START */
-
-if(onStart) onStart();
-
-/* PLAY FROM CACHE ONLY */
-
-await speakText(text, slideIndex);
-
-/* NEXT SLIDE PRELOAD */
+/* 🔹 preload ONLY next slide */
 
 const next = slideIndex + 1;
 
-if(slides[next]){
-preloadSpeech(next, slides[next].voice);
+if(slides[next] && slides[next].voice){
+
+await preloadSpeech(next, slides[next].voice);
+
 }
 
-/* FINISH */
+/* start avatar speaking */
+
+if(onStart) onStart();
+
+/* play voice */
+
+await speakText(text, slideIndex);
+
+/* finish callback */
 
 if(onFinish) onFinish();
 
 }catch(e){
 
-console.error(e);
+console.error("VoicePlayer error:",e);
 
 }
 
@@ -46,7 +44,7 @@ console.error(e);
 
 playVoice();
 
-}, [text, slideIndex]);
+}, [slideIndex]);
 
 return null;
 
