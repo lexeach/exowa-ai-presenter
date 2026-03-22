@@ -16,6 +16,7 @@ audio.play().catch(()=>{});
 }
 
 
+
 export async function speakText(text){
 
 try{
@@ -62,17 +63,17 @@ audio.volume=1;
 currentAudio = audio;
 
 
-/* wait until audio buffer ready */
+/* wait for audio buffer */
 
 await new Promise(resolve=>{
 audio.onloadeddata = resolve;
 });
 
 
-/* small delay so first words are not cut */
+/* important delay */
 
 await new Promise(resolve=>{
-setTimeout(resolve,120);
+setTimeout(resolve,250);
 });
 
 
