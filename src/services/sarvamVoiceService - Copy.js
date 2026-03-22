@@ -1,5 +1,8 @@
 let currentAudio = null;
 
+
+/* Unlock audio for browser autoplay */
+
 export function unlockAudio(){
 
 try{
@@ -11,17 +14,18 @@ audio.src =
 
 audio.play().catch(()=>{});
 
-}catch(e){}
+}catch(e){
+console.warn("Audio unlock failed");
+}
 
 }
 
 
+/* TTS voice */
 
 export async function speakText(text){
 
 try{
-
-console.log("TTS request:",text);
 
 const response = await fetch("/.netlify/functions/sarvamTTS",{
 method:"POST",
@@ -33,56 +37,21 @@ body: JSON.stringify({text})
 
 const data = await response.json();
 
-console.log("TTS response:",data);
-
-if(!data.audios || data.audios.length===0){
-console.error("No audio returned");
+if(!data.audios || data.audios.length === 0){
 return;
 }
 
 const audioBase64 = data.audios[0];
-
 const audioSrc = `data:audio/wav;base64,${audioBase64}`;
-
-
-/* stop previous audio */
 
 if(currentAudio){
 currentAudio.pause();
-currentAudio=null;
 }
 
-
-/* create audio */
-
 const audio = new Audio(audioSrc);
-
-audio.preload="auto";
-audio.volume=1;
-
 currentAudio = audio;
 
-
-/* wait for audio buffer */
-
-await new Promise(resolve=>{
-audio.onloadeddata = resolve;
-});
-
-
-/* important delay */
-
-await new Promise(resolve=>{
-setTimeout(resolve,250);
-});
-
-
-/* play */
-
 await audio.play();
-
-
-/* wait until finish */
 
 return new Promise(resolve=>{
 audio.onended = resolve;
