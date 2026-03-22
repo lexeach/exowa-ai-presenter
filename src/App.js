@@ -150,7 +150,7 @@ return prev;
 )}
 
 
-/* Q&A intro voice */
+{/* Q&A intro voice */}
 
 {qaMode && !qaIntroDone && (
 
@@ -170,7 +170,7 @@ setQaIntroDone(true);
 )}
 
 
-/* CONTROLS */
+{/* CONTROLS */}
 
 <div
 style={{
