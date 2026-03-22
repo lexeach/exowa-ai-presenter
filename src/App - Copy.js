@@ -11,8 +11,6 @@ function App() {
 const [currentSlide, setCurrentSlide] = useState(0);
 const [speaking, setSpeaking] = useState(false);
 const [started, setStarted] = useState(false);
-const [qaMode, setQaMode] = useState(false);
-const [qaIntroDone, setQaIntroDone] = useState(false);
 
 const nextSlide = () => {
 
@@ -63,9 +61,8 @@ EXOWA AI Presenter
 {/* Slide */}
 <SlideViewer slide={slides[currentSlide]} />
 
-{/* SLIDE VOICE NARRATION */}
-{started && !qaMode && (
-
+{/* Voice narration (only after start) */}
+{started && (
 <VoicePlayer
 key={currentSlide}
 text={slides[currentSlide]?.voice}
@@ -74,21 +71,9 @@ onFinish={() => {
 
 setSpeaking(false);
 
-/* Slide 20 finished → Start Q&A mode */
-
-if(currentSlide === 19){
-
-setQaMode(true);
-
-return;
-
-}
-
-/* Move to next slide */
-
 setCurrentSlide(prev => {
 
-if(prev < slides.length - 1){
+if (prev < slides.length - 1) {
 return prev + 1;
 }
 
@@ -98,23 +83,6 @@ return prev;
 
 }}
 />
-
-)}
-
-{/* Q&A INTRO VOICE */}
-{qaMode && !qaIntroDone && (
-
-<VoicePlayer
-text="अगर आपका कोई सवाल है तो आप पूछ सकते हैं।"
-onStart={() => setSpeaking(true)}
-onFinish={() => {
-
-setSpeaking(false);
-setQaIntroDone(true);
-
-}}
-/>
-
 )}
 
 {/* Slide Controls */}
@@ -155,10 +123,8 @@ Start Presentation
 
 </div>
 
-{/* Q&A Chat */}
-{qaMode && qaIntroDone && (
+{/* AI Chat */}
 <ChatBox setSpeaking={setSpeaking} />
-)}
 
 </div>
 
