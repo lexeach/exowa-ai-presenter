@@ -20,7 +20,7 @@ const aiSpeakingRef = useRef(false);
 
 useEffect(()=>{
 
-if(autoStart){
+if(autoStart && window.innerWidth > 768){
 
 setTimeout(()=>{
 startConversation();
@@ -36,7 +36,13 @@ startConversation();
 const startRecognition = () => {
 
 const SpeechRecognition =
-window.SpeechRecognition || window.webkitSpeechRecognition;
+window.SpeechRecognition ||
+window.webkitSpeechRecognition;
+
+if(!SpeechRecognition){
+alert("Voice interaction is not supported on this browser.");
+return;
+}
 
 const recognition = new SpeechRecognition();
 

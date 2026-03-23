@@ -253,7 +253,10 @@ Start Presentation
 
 {qaMode && qaIntroDone && (
 
-<ChatBox setSpeaking={setSpeaking} autoStart={true} />
+<ChatBox
+setSpeaking={setSpeaking}
+autoStart={window.innerWidth > 768}
+/>
 
 )}
 
