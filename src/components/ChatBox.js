@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { askAI } from "../services/openaiService";
 import { speakText } from "../services/sarvamVoiceService";
+import { autoCorrect } from "../utils/speechAutoCorrect";
+import { detectIntent } from "../utils/intentDetector";
+import { generateSalesReply } from "../utils/salesBrain";
 
 function ChatBox({ setSpeaking, autoStart }) {
 
@@ -53,9 +56,23 @@ recognition.start();
 
 recognition.onresult = async (event) => {
 
-const question = event.results[0][0].transcript;
+let question = event.results[0][0].transcript;
+
+/* speech autocorrect */
+
+question = autoCorrect(question);
+
+/* intent detection */
+
+const intent = detectIntent(question);
+
+/* sales reply */
+
+const answer = generateSalesReply(intent);
 
 console.log("Parent:", question);
+console.log("Intent:", intent);
+console.log("AI:", answer);
 
 setListening(false);
 
