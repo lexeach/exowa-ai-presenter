@@ -104,14 +104,7 @@ recognitionRef.current = null;
 
 /* GET AI ANSWER */
 
-const answer = await askAI(question, historyRef.current);
 
-console.log("AI:", answer);
-
-historyRef.current.push({
-role:"assistant",
-content:answer
-});
 
 
 /* AI SPEAKING */
