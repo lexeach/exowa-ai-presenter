@@ -14,10 +14,16 @@ try {
 
 /* preload next slide */
 
+if(slideIndex !== 999){
+
 const next = slideIndex + 1;
 
-if (slides[next] && slides[next].voice) {
+if(slides[next] && slides[next].voice){
+
 preloadSpeech(next, slides[next].voice);
+
+}
+
 }
 
 /* wait for slide to render */

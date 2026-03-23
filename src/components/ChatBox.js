@@ -142,7 +142,7 @@ setTimeout(()=>{
 
 startRecognition();
 
-},700);
+},300);
 
 }
 
