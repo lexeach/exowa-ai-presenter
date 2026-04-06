@@ -1,5 +1,5 @@
 import React from "react";
-import ObservabilityDashboard from "../pages/ObservabilityDashboard";
+import ObservabilityDashboard from "./ObservabilityDashboard";
 
 function LiveReportPage() {
   return (
