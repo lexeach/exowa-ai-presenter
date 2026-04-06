@@ -4,6 +4,7 @@ import { speakText } from "../services/sarvamVoiceService";
 import { autoCorrect } from "../utils/speechAutoCorrect";
 import { detectIntent } from "../utils/intentDetector";
 import { generateSalesReply } from "../utils/salesBrain";
+import voiceEngine from "../services/exowaVoiceEngine"
 
 function ChatBox({ setSpeaking, autoStart }) {
 
@@ -49,7 +50,7 @@ const recognition = new SpeechRecognition();
 recognition.lang = "hi-IN";
 recognition.continuous = false;
 recognition.interimResults = false;
-recognition.maxAlternatives = 1;
+recognition.maxAlternatives = 3;
 
 recognitionRef.current = recognition;
 

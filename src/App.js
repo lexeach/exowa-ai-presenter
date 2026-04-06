@@ -5,6 +5,10 @@ import ChatBox from "./components/ChatBox";
 import VoicePlayer from "./components/VoicePlayer";
 import AvatarPresenter from "./components/AvatarPresenter";
 import { slides } from "./slides/slidesData";
+import LeadDashboard from "./components/LeadDashboard";
+import SalesAnalytics from "./components/SalesAnalytics";
+import CalendarBooking from "./components/CalendarBooking";
+
 
 function App() {
 
@@ -18,6 +22,29 @@ const [qaIntroDone, setQaIntroDone] = useState(false);
 const [isMobileFull, setIsMobileFull] = useState(false);
 
 const containerRef = useRef(null);
+const leads = [
+  {
+    name: "Rahul",
+    phone: "9876543210",
+    status: "NEW",
+    attempts: 1,
+    demoTime: "5:00 PM"
+  }
+];
+
+<LeadDashboard leads={leads} />
+
+<SalesAnalytics
+  totalLeads={50}
+  demosBooked={20}
+  closedSales={8}
+  referrals={15}
+/>
+
+<CalendarBooking
+  onBook={(booking) => console.log(booking)}
+/>
+
 
 
 /* FIX MOBILE VIEWPORT HEIGHT */

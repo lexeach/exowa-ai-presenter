@@ -1,0 +1,42 @@
+class ExowaVoiceEngine {
+
+constructor(){
+
+this.ws = null
+this.audioContext = null
+this.processor = null
+this.stream = null
+this.source = null
+
+this.isConnected = false
+this.isSpeaking = false
+
+this.sampleRate = 16000
+
+}
+
+
+/* START VOICE SESSION */
+
+async start(){
+
+try{
+
+console.log("Voice Engine starting...")
+
+/* mic access */
+
+this.stream = await navigator.mediaDevices.getUserMedia({
+audio:true
+})
+
+this.audioContext = new (window.AudioContext || window.webkitAudioContext)({
+sampleRate:this.sampleRate
+})
+
+this.source = this.audioContext.createMediaStreamSource(this.stream)
+
+
+/* processor */
+
+this.processor = this.audioContext.createScriptProcessor(4096,1,1)
