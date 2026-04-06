@@ -1,5 +1,5 @@
 import React from "react";
-import ReinforcementDashboard from "../pages/ReinforcementDashboard";
+import ReinforcementDashboard from "./ReinforcementDashboard";
 
 function LearningDashboardPage() {
   return (
