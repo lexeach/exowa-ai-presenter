@@ -9,6 +9,7 @@
     "react-router-dom": "^6.x.x",
     "react-scripts": "5.0.1",
     "openai": "^4.56.0",
+    "axios": "^1.x.x",
     "sarvamai": "^1.0.0"
   },
   "scripts": {
