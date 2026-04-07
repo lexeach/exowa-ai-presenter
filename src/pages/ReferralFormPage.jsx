@@ -1,15 +1,95 @@
-import React from "react";
-import LeadForm from "../components/LeadForm";
+import React, {
+  useState
+} from "react";
+import apiClient from "../services/apiClient";
 
 function ReferralFormPage() {
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>
-        👥 Referral Form
-      </h1>
+  const [formData, setFormData] =
+    useState({
+      name: "",
+      phone: "",
+      studentClass: "",
+      referredBy: ""
+    });
 
-      <LeadForm type="referral" />
-    </div>
+  const handleChange = (
+    e
+  ) => {
+    setFormData({
+      ...formData,
+      [e.target.name]:
+        e.target.value
+    });
+  };
+
+  const handleSubmit = async (
+    e
+  ) => {
+    e.preventDefault();
+
+    try {
+      await apiClient.post(
+        "/api/leads/create",
+        formData
+      );
+
+      alert(
+        "✅ Lead submitted successfully"
+      );
+    } catch (error) {
+      console.error(
+        error
+      );
+      alert(
+        "❌ Submit failed"
+      );
+    }
+  };
+
+  return (
+    <form
+      onSubmit={
+        handleSubmit
+      }
+    >
+      <input
+        name="name"
+        placeholder="Name"
+        onChange={
+          handleChange
+        }
+      />
+
+      <input
+        name="phone"
+        placeholder="Phone"
+        onChange={
+          handleChange
+        }
+      />
+
+      <input
+        name="studentClass"
+        placeholder="Class"
+        onChange={
+          handleChange
+        }
+      />
+
+      <input
+        name="referredBy"
+        placeholder="Referred By"
+        onChange={
+          handleChange
+        }
+      />
+
+      <button
+        type="submit"
+      >
+        Submit
+      </button>
+    </form>
   );
 }
 
