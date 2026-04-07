@@ -1,12 +1,11 @@
 import React from "react";
-import ReinforcementDashboard from "./ReinforcementDashboard";
+import AdminLayout from "../components/AdminLayout";
 
 function LearningDashboardPage() {
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>🧠 AI Learning Dashboard</h1>
-      <ReinforcementDashboard />
-    </div>
+    <AdminLayout>
+      <h1>🧠 AI Learning</h1>
+    </AdminLayout>
   );
 }
 
