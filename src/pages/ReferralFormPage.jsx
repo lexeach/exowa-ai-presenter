@@ -28,68 +28,136 @@ function ReferralFormPage() {
     e.preventDefault();
 
     try {
-      await apiClient.post(
-        "/api/leads/create",
-        formData
+      const response =
+        await apiClient.post(
+          "/api/leads/create",
+          formData
+        );
+
+      console.log(
+        "✅ Submit success:",
+        response.data
       );
 
       alert(
-        "✅ Lead submitted successfully"
+        response.data
+          ?.message ||
+          "✅ Lead submitted successfully"
       );
+
+      /* RESET FORM AFTER SUCCESS */
+      setFormData({
+        name: "",
+        phone: "",
+        studentClass:
+          "",
+        referredBy: ""
+      });
     } catch (error) {
       console.error(
-        error
+        "❌ Submit error:",
+        error.response
+          ?.data || error
       );
-      alert(
-        "❌ Submit failed"
-      );
+
+      const errorMessage =
+        error.response
+          ?.data
+          ?.message ||
+        "❌ Submit failed";
+
+      alert(errorMessage);
     }
   };
 
   return (
-    <form
-      onSubmit={
-        handleSubmit
-      }
+    <div
+      style={{
+        maxWidth: "400px",
+        margin: "40px auto",
+        padding: "20px",
+        border:
+          "1px solid #ddd",
+        borderRadius: "10px",
+        background:
+          "#ffffff"
+      }}
     >
-      <input
-        name="name"
-        placeholder="Name"
-        onChange={
-          handleChange
-        }
-      />
+      <h2>
+        📋 Referral Form
+      </h2>
 
-      <input
-        name="phone"
-        placeholder="Phone"
-        onChange={
-          handleChange
+      <form
+        onSubmit={
+          handleSubmit
         }
-      />
-
-      <input
-        name="studentClass"
-        placeholder="Class"
-        onChange={
-          handleChange
-        }
-      />
-
-      <input
-        name="referredBy"
-        placeholder="Referred By"
-        onChange={
-          handleChange
-        }
-      />
-
-      <button
-        type="submit"
+        style={{
+          display: "flex",
+          flexDirection:
+            "column",
+          gap: "12px"
+        }}
       >
-        Submit
-      </button>
-    </form>
+        <input
+          name="name"
+          placeholder="Name"
+          value={
+            formData.name
+          }
+          onChange={
+            handleChange
+          }
+        />
+
+        <input
+          name="phone"
+          placeholder="Phone"
+          value={
+            formData.phone
+          }
+          onChange={
+            handleChange
+          }
+        />
+
+        <input
+          name="studentClass"
+          placeholder="Class"
+          value={
+            formData.studentClass
+          }
+          onChange={
+            handleChange
+          }
+        />
+
+        <input
+          name="referredBy"
+          placeholder="Referred By"
+          value={
+            formData.referredBy
+          }
+          onChange={
+            handleChange
+          }
+        />
+
+        <button
+          type="submit"
+          style={{
+            padding:
+              "10px",
+            border: "none",
+            borderRadius:
+              "6px",
+            cursor:
+              "pointer"
+          }}
+        >
+          Submit
+        </button>
+      </form>
+    </div>
   );
 }
 
