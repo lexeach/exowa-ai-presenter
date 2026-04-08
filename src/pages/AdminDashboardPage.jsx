@@ -64,40 +64,67 @@ function AdminDashboardPage() {
         </div>
 
         {/* LEAD TABLE WITH ACTION BUTTONS */}
-        <div
-          style={{
-            padding: "20px",
-            border: "1px solid #ddd",
-            borderRadius: "10px",
-            background: "#fff",
-            overflowX: "auto"
-          }}
-        >
-          <h2>👥 Latest Leads</h2>
+       <div
+  style={{
+    padding: "20px",
+    border: "1px solid #ddd",
+    borderRadius: "10px",
+    background: "#fff",
+    overflowX: "auto"
+  }}
+>
+  <h2>👥 Latest Leads</h2>
 
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ textAlign: "left", borderBottom: "2px solid #eee" }}>
-                <th style={{ padding: "12px" }}>Name</th>
-                <th style={{ padding: "12px" }}>Phone</th>
-                <th style={{ padding: "12px" }}>Class</th>
-                <th style={{ padding: "12px" }}>Referred By</th>
-                <th style={{ padding: "12px" }}>Status / Actions</th>
-              </tr>
-            </thead>
+  <table
+    style={{
+      width: "100%",
+      borderCollapse: "collapse",
+      minWidth: "900px"
+    }}
+  >
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Class</th>
+        <th>Referred By</th>
+        <th>Status</th>
+        <th>Call Status</th>
+        <th>Demo Date</th>
+        <th>Demo Time</th>
+        <th>Retry</th>
+      </tr>
+    </thead>
 
-            <tbody>
-              {leads.map((lead) => (
-                <tr key={lead._id} style={{ borderBottom: "1px solid #eee" }}>
-                  <td style={{ padding: "12px" }}>{lead.name}</td>
-                  <td style={{ padding: "12px" }}>{lead.phone}</td>
-                  <td style={{ padding: "12px" }}>{lead.studentClass}</td>
-                  <td style={{ padding: "12px" }}>{lead.referredBy || "—"}</td>
-                  <td style={{ padding: "12px" }}>
-                    <div style={{ fontWeight: "bold", color: "#555" }}>
-                      {lead.status}
-                    </div>
-
+    <tbody>
+      {leads.map((lead) => (
+        <tr key={lead._id}>
+          <td>{lead.name}</td>
+          <td>{lead.phone}</td>
+          <td>{lead.studentClass}</td>
+          <td>{lead.referredBy}</td>
+          <td>{lead.status}</td>
+          <td>
+            {lead.callStatus ||
+              "NOT_STARTED"}
+          </td>
+          <td>
+            {lead.demoDate ||
+              "-"}
+          </td>
+          <td>
+            {lead.demoTime ||
+              "-"}
+          </td>
+          <td>
+            {lead.retryCount ??
+              0}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
                     <div
                       style={{
                         display: "flex",
