@@ -9,7 +9,7 @@ function ReferralFormPage() {
       name: "",
       phone: "",
       studentClass: "",
-      referredBy: ""
+      referredBy: "",
       preferredCallTime: ""
     });
 
@@ -50,9 +50,9 @@ function ReferralFormPage() {
       setFormData({
         name: "",
         phone: "",
-        studentClass:
-          "",
-        referredBy: ""
+        studentClass: "",
+        referredBy: "",
+        preferredCallTime: ""
       });
     } catch (error) {
       console.error(
