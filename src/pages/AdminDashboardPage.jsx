@@ -20,11 +20,10 @@ function AdminDashboardPage() {
     }
   };
 
-  // --- NEW FUNCTION ADDED HERE ---
   const updateStatus = async (id, status) => {
     try {
       await apiClient.put(`/api/leads/status/${id}`, { status });
-      fetchLeads(); // Refresh list to show updated status
+      fetchLeads();
     } catch (error) {
       console.error("❌ Status update error:", error);
     }
@@ -51,7 +50,6 @@ function AdminDashboardPage() {
           referrals={totalLeads}
         />
 
-        {/* SUMMARY CARDS */}
         <div
           style={{
             display: "grid",
@@ -65,13 +63,14 @@ function AdminDashboardPage() {
           <Card title="💰 Closed Sales" value={closedSales} />
         </div>
 
-        {/* LEAD TABLE */}
+        {/* LEAD TABLE WITH ACTION BUTTONS */}
         <div
           style={{
             padding: "20px",
             border: "1px solid #ddd",
             borderRadius: "10px",
             background: "#fff",
+            overflowX: "auto"
           }}
         >
           <h2>👥 Latest Leads</h2>
@@ -79,36 +78,54 @@ function AdminDashboardPage() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ textAlign: "left", borderBottom: "2px solid #eee" }}>
-                <th style={{ padding: "10px" }}>Name</th>
-                <th style={{ padding: "10px" }}>Phone</th>
-                <th style={{ padding: "10px" }}>Class</th>
-                <th style={{ padding: "10px" }}>Referred By</th>
-                <th style={{ padding: "10px" }}>Status</th>
+                <th style={{ padding: "12px" }}>Name</th>
+                <th style={{ padding: "12px" }}>Phone</th>
+                <th style={{ padding: "12px" }}>Class</th>
+                <th style={{ padding: "12px" }}>Referred By</th>
+                <th style={{ padding: "12px" }}>Status / Actions</th>
               </tr>
             </thead>
 
             <tbody>
               {leads.map((lead) => (
                 <tr key={lead._id} style={{ borderBottom: "1px solid #eee" }}>
-                  <td style={{ padding: "10px" }}>{lead.name}</td>
-                  <td style={{ padding: "10px" }}>{lead.phone}</td>
-                  <td style={{ padding: "10px" }}>{lead.studentClass}</td>
-                  <td style={{ padding: "10px" }}>{lead.referredBy || "N/A"}</td>
-                  <td style={{ padding: "10px" }}>
-                    {/* DROPDOWN TO UPDATE STATUS */}
-                    <select
-                      value={lead.status}
-                      onChange={(e) => updateStatus(lead._id, e.target.value)}
+                  <td style={{ padding: "12px" }}>{lead.name}</td>
+                  <td style={{ padding: "12px" }}>{lead.phone}</td>
+                  <td style={{ padding: "12px" }}>{lead.studentClass}</td>
+                  <td style={{ padding: "12px" }}>{lead.referredBy || "—"}</td>
+                  <td style={{ padding: "12px" }}>
+                    <div style={{ fontWeight: "bold", color: "#555" }}>
+                      {lead.status}
+                    </div>
+
+                    <div
                       style={{
-                        padding: "5px",
-                        borderRadius: "5px",
-                        border: "1px solid #ccc",
+                        display: "flex",
+                        gap: "6px",
+                        marginTop: "6px"
                       }}
                     >
-                      <option value="NEW">NEW</option>
-                      <option value="DEMO_BOOKED">DEMO BOOKED</option>
-                      <option value="CLOSED">CLOSED</option>
-                    </select>
+                      <button
+                        style={btnStyle}
+                        onClick={() => updateStatus(lead._id, "AI_CALLED")}
+                      >
+                        Called
+                      </button>
+
+                      <button
+                        style={btnStyle}
+                        onClick={() => updateStatus(lead._id, "DEMO_BOOKED")}
+                      >
+                        Demo
+                      </button>
+
+                      <button
+                        style={{ ...btnStyle, backgroundColor: "#e8f5e9", color: "#2e7d32" }}
+                        onClick={() => updateStatus(lead._id, "CLOSED")}
+                      >
+                        Close
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -121,6 +138,16 @@ function AdminDashboardPage() {
     </AdminLayout>
   );
 }
+
+// Simple button styling for better UX
+const btnStyle = {
+  padding: "4px 8px",
+  fontSize: "12px",
+  cursor: "pointer",
+  borderRadius: "4px",
+  border: "1px solid #ccc",
+  backgroundColor: "#f9f9f9"
+};
 
 function Card({ title, value }) {
   return (
