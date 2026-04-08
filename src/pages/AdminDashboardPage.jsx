@@ -34,15 +34,6 @@ function AdminDashboardPage() {
       }
     };
 
-  const handleBooking = (
-    booking
-  ) => {
-    console.log(
-      "📅 Booking:",
-      booking
-    );
-  };
-
   const totalLeads =
     leads.length;
 
@@ -52,6 +43,29 @@ function AdminDashboardPage() {
         lead.status ===
         "NEW"
     ).length;
+
+  const demoBooked =
+    leads.filter(
+      (lead) =>
+        lead.status ===
+        "DEMO_BOOKED"
+    ).length;
+
+  const closedSales =
+    leads.filter(
+      (lead) =>
+        lead.status ===
+        "CLOSED"
+    ).length;
+
+  const handleBooking = (
+    booking
+  ) => {
+    console.log(
+      "📅 Booking:",
+      booking
+    );
+  };
 
   return (
     <AdminLayout>
@@ -71,42 +85,53 @@ function AdminDashboardPage() {
           totalLeads={
             totalLeads
           }
-          demosBooked={0}
-          closedSales={0}
+          demosBooked={
+            demoBooked
+          }
+          closedSales={
+            closedSales
+          }
           referrals={
             totalLeads
           }
         />
 
+        {/* SUMMARY CARDS */}
         <div
           style={{
-            padding:
-              "20px",
-            border:
-              "1px solid #ddd",
-            borderRadius:
-              "10px",
-            background:
-              "#fff"
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "20px"
           }}
         >
-          <h2>
-            📊 Live Lead Summary
-          </h2>
-
-          <p>
-            Total Leads:{" "}
-            {
+          <Card
+            title="👥 Total Leads"
+            value={
               totalLeads
             }
-          </p>
-
-          <p>
-            New Leads:{" "}
-            {newLeads}
-          </p>
+          />
+          <Card
+            title="🆕 New Leads"
+            value={
+              newLeads
+            }
+          />
+          <Card
+            title="📅 Demo Booked"
+            value={
+              demoBooked
+            }
+          />
+          <Card
+            title="💰 Closed Sales"
+            value={
+              closedSales
+            }
+          />
         </div>
 
+        {/* LEAD TABLE */}
         <div
           style={{
             padding:
@@ -120,38 +145,74 @@ function AdminDashboardPage() {
           }}
         >
           <h2>
-            👥 Lead List
+            👥 Latest Leads
           </h2>
 
-          {leads.map(
-            (lead) => (
-              <div
-                key={
-                  lead._id
-                }
-                style={{
-                  padding:
-                    "10px 0",
-                  borderBottom:
-                    "1px solid #eee"
-                }}
-              >
-                <strong>
-                  {
-                    lead.name
-                  }
-                </strong>{" "}
-                -{" "}
-                {
-                  lead.phone
-                }{" "}
-                -{" "}
-                {
-                  lead.status
-                }
-              </div>
-            )
-          )}
+          <table
+            style={{
+              width: "100%",
+              borderCollapse:
+                "collapse"
+            }}
+          >
+            <thead>
+              <tr>
+                <th>
+                  Name
+                </th>
+                <th>
+                  Phone
+                </th>
+                <th>
+                  Class
+                </th>
+                <th>
+                  Referred By
+                </th>
+                <th>
+                  Status
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {leads.map(
+                (lead) => (
+                  <tr
+                    key={
+                      lead._id
+                    }
+                  >
+                    <td>
+                      {
+                        lead.name
+                      }
+                    </td>
+                    <td>
+                      {
+                        lead.phone
+                      }
+                    </td>
+                    <td>
+                      {
+                        lead.studentClass
+                      }
+                    </td>
+                    <td>
+                      {
+                        lead.referredBy
+                      }
+                    </td>
+                    <td>
+                      {
+                        lead.status
+                      }
+                    </td>
+                  </tr>
+                )
+              )}
+            </tbody>
+          </table>
         </div>
 
         <CalendarBooking
@@ -161,6 +222,28 @@ function AdminDashboardPage() {
         />
       </div>
     </AdminLayout>
+  );
+}
+
+function Card({
+  title,
+  value
+}) {
+  return (
+    <div
+      style={{
+        padding: "20px",
+        border:
+          "1px solid #ddd",
+        borderRadius:
+          "10px",
+        background:
+          "#fff"
+      }}
+    >
+      <h3>{title}</h3>
+      <h2>{value}</h2>
+    </div>
   );
 }
 
