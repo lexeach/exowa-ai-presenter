@@ -10,6 +10,7 @@ function ReferralFormPage() {
       phone: "",
       studentClass: "",
       referredBy: ""
+      preferredCallTime: ""
     });
 
   const handleChange = (
@@ -141,7 +142,12 @@ function ReferralFormPage() {
             handleChange
           }
         />
-
+        <input
+          type="time"
+          name="preferredCallTime"
+          value={formData.preferredCallTime}
+          onChange={handleChange}
+          />
         <button
           type="submit"
           style={{
