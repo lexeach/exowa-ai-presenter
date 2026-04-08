@@ -281,6 +281,9 @@ function AdminDashboardPage() {
                 <th>
                   Retry
                 </th>
+                <th>
+                  Next Retry
+                </th>
               </tr>
             </thead>
 
@@ -353,6 +356,15 @@ function AdminDashboardPage() {
                       {lead.retryCount ??
                         0}
                     </td>
+                    <td>
+  {lead.nextRetryAt
+    ? new Date(
+        lead.nextRetryAt
+      ).toLocaleString(
+        "en-IN"
+      )
+    : "-"}
+</td>
                   </tr>
                 )
               )}
