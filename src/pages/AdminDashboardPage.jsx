@@ -1,71 +1,67 @@
-import React from "react";
+import React, {
+  useEffect,
+  useState
+} from "react";
+import apiClient from "../services/apiClient";
+
 import AdminLayout from "../components/AdminLayout";
 import LeadDashboard from "../components/LeadDashboard";
 import SalesAnalytics from "../components/SalesAnalytics";
 import CalendarBooking from "../components/CalendarBooking";
 
 function AdminDashboardPage() {
-  const leads = [
-    {
-      name: "Rahul Sharma",
-      phone: "9876543210",
-      status: "NEW",
-      attempts: 1,
-      demoTime: "5:00 PM"
-    },
-    {
-      name: "Priya Verma",
-      phone: "9876543211",
-      status: "DEMO_BOOKED",
-      attempts: 2,
-      demoTime: "6:30 PM"
-    },
-    {
-      name: "Amit Kumar",
-      phone: "9876543212",
-      status: "FOLLOW_UP",
-      attempts: 1,
-      demoTime: "Tomorrow 11:00 AM"
-    }
-  ];
+  const [leads, setLeads] =
+    useState([]);
 
-  const handleBooking = (booking) => {
-    console.log(
-      "📅 Booking:",
-      booking
-    );
-  };
+  useEffect(() => {
+    fetchLeads();
+  }, []);
+
+  const fetchLeads =
+    async () => {
+      try {
+        const response =
+          await apiClient.get(
+            "/api/leads/all"
+          );
+
+        setLeads(
+          response.data.data
+        );
+      } catch (error) {
+        console.error(
+          error
+        );
+      }
+    };
 
   return (
     <AdminLayout>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "20px"
-        }}
-      >
-        <h1>
-          🛠 Admin Dashboard
-        </h1>
+      <h1>
+        🛠 Admin Dashboard
+      </h1>
 
-        <SalesAnalytics
-          totalLeads={50}
-          demosBooked={20}
-          closedSales={8}
-          referrals={15}
-        />
+      <p>
+        Total Leads:{" "}
+        {leads.length}
+      </p>
 
-        <LeadDashboard
-          leads={leads}
-        />
-
-        <CalendarBooking
-          onBook={
-            handleBooking
-          }
-        />
-      </div>
+      {leads.map(
+        (lead) => (
+          <div
+            key={lead._id}
+          >
+            {lead.name} -{" "}
+            {
+              lead.phone
+            }{" "}
+            -{" "}
+            {
+              lead.status
+            }
+          </div>
+        )
+      )}
     </AdminLayout>
   );
 }
